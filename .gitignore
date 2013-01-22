@@ -1,0 +1,28 @@
+# Local binaries (they are generated).
+/bin/
+
+# Local configuration (generated from templates)...
+/etc/
+
+# External libraries (generated).
+/lib/
+
+# External source files (managed with their own VCS).
+/src/
+
+# Data files.
+/var/
+
+# Python files.
+*.pyc
+*.pyo
+*.egg-info
+
+# Compiled gettext catalogs.
+*.mo
+
+# Editors' temporary files
+.*.swp
+
+# Buildout files.
+.mr.developer.cfg
