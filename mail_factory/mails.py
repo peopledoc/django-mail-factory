@@ -121,9 +121,12 @@ class BaseMail(object):
     def send(self, emails, attachments, from_email=None):
         """Create the message and send it to emails."""
         msg = self.create_email_msg(emails, from_email=from_email)
-        for filepath, filename, mimetype in attachments:
-            with open(filepath, 'rb') as attachment:
-                msg.attach(filename, attachment.read(), mimetype)
+
+        if attachments:
+            for filepath, filename, mimetype in attachments:
+                with open(filepath, 'rb') as attachment:
+                    msg.attach(filename, attachment.read(), mimetype)
+
         msg.send()
 
     def mail_admins(self, attachments=None, from_email=None):

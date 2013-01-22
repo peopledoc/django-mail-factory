@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from mail_factory import exceptions
-from mail_factory.mails import BaseMail
 
 
 class MailFactory(object):
@@ -8,7 +7,7 @@ class MailFactory(object):
 
     def register(self, mail_klass):
         """Register a Mail class from the factory map."""
-        if isinstance(mail_klass, BaseMail):
+        if hasattr(mail_klass, 'template_name'):
             if mail_klass.template_name not in self.mail_map:
                 self.mail_map[mail_klass.template_name] = mail_klass
             else:
@@ -18,20 +17,23 @@ class MailFactory(object):
                         self.mail_map[mail_klass.template_name].__name__))
         else:
             raise exceptions.MailFactoryError(
-                '%s is not a BaseMail and cannot be register.' % (
+                "%s doesn't have a template_name and cannot be register." % (
                     mail_klass.__name__))
 
     def unregister(self, mail_klass):
         """Unregister a Mail class from the factory map."""
-        if mail_klass.template_name in self.mail_map and \
-                self.mail_map[mail_klass.template_name] == mail_klass:
-            del self.mail_map[mail_klass.template_name]
+        if mail_klass.template_name in self.mail_map:
+            if self.mail_map[mail_klass.template_name] == mail_klass:
+                del self.mail_map[mail_klass.template_name]
+            else:
+                raise exceptions.MailFactoryError(
+                    '%s is registered for %s not for %s.' % (
+                        mail_klass.template_name,
+                        self.mail_map[mail_klass.template_name].__name__,
+                        mail_klass.__name__))
         else:
             raise exceptions.MailFactoryError(
-                '%s is registered for %s not for %s.' % (
-                    mail_klass.template_name,
-                    self.mail_map[mail_klass.template_name].__name__,
-                    mail_klass.__name__))
+                '%s is not registered.' % mail_klass.template_name)
 
     def _get_mail_object(self, template_name):
         """Returns the MailClass from the registration map and its
