@@ -11,52 +11,8 @@ def read_relative_file(filename):
         return f.read()
 
 
-def packages(project_name):
-    """Return list of packages distributed by project based on its name.
 
-    >>> packages('foo')
-    ['foo']
-    >>> packages('foo.bar')
-    ['foo', 'foo.bar']
-    >>> packages('foo.bar.baz')
-    ['foo', 'foo.bar', 'foo.bar.baz']
-    >>> packages('FooBar')
-    ['foobar']
-
-    Implements "Use a single name" convention described in :pep:`423`.
-
-    """
-    name = str(project_name).lower()
-    if '.' in name:  # Using namespace packages.
-        parts = name.split('.')
-        return ['.'.join(parts[0:i]) for i in range(1, len(parts) + 1)]
-    else:  # One root package or module.
-        return [name]
-
-
-def namespace_packages(project_name):
-    """Return list of namespace packages distributed in this project, based on
-    project name.
-
-    >>> namespace_packages('foo')
-    []
-    >>> namespace_packages('foo.bar')
-    ['foo']
-    >>> namespace_packages('foo.bar.baz')
-    ['foo', 'foo.bar']
-    >>> namespace_packages('Foo.BaR.BAZ') == namespace_packages('foo.bar.baz')
-    True
-
-    Implements "Use a single name" convention described in :pep:`423`.
-
-    """
-    package_list = packages(project_name)
-    package_list.pop()  # Ignore last element.
-    # Remaining packages are supposed to be namespace packages.
-    return package_list
-
-
-name = 'mail_factory'
+name = 'django-mail-factory'
 version = read_relative_file('VERSION').strip()
 readme = read_relative_file('README')
 requirements = ['setuptools']
@@ -78,8 +34,7 @@ if __name__ == '__main__':  # ``import setup`` doesn't trigger setup().
           author_email='rd@novapost.fr',
           url='https://github.com/novagile/django-mail-factory',
           license='BSD Licence',
-          packages=packages(name),
-          namespace_packages=namespace_packages(name),
+          packages=['mail_factory'],
           include_package_data=True,
           zip_safe=False,
           install_requires=requirements,
