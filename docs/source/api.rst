@@ -89,7 +89,7 @@ mails, you can define it here:
     class MyProjectBaseMail(BaseMail):         
 
         def get_attachments(self, attachements):
-            attachments = BaseMail.get_attachments(attachments) || []
+            attachments = BaseMail.get_attachments(self, attachments) || []
             attachments.append((finders.find('mails/header.png'),
                                 'header.png', 'image/png'))
             return attachments
