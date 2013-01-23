@@ -49,7 +49,7 @@ all mails:
             lang = self.context['user'].get_profile().language_code
             return lang
 
-    class ActivationMail(BaseMail):
+    class ActivationMail(MyProjectBaseMail):
         template_name = 'activation'
         params = ['activation_key']
 
