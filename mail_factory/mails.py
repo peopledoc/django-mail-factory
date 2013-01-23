@@ -25,22 +25,25 @@ class BaseMail(object):
 
     def __init__(self, context):
         """Create a mail instance from a context."""
-        # Auto detect the language
-        self.lang = translation.get_language()  # Get current language
-        try:
-            # Try to get the user language choice
-            self.lang = context['user'].get_profile().language_code
-        except:
-            pass
-
         # Create the context
         c = self.get_context_data(**context)
         self.context = Context(c)
+        self.lang = self.get_language()
 
         # Check that all the mandatory context is present.
         for key in self.get_params():
             if not key in context:
                 raise exceptions.MissingMailContextParamException(repr(key))
+
+    def get_language(self):
+        # Auto detect the language
+        lang = translation.get_language()  # Get current language
+        try:
+            # Try to get the user language choice
+            lang = self.context['user'].get_profile().language_code
+        except KeyError:
+            pass
+        return lang
 
     def get_params(self):
         """Returns the list of mandatory context variables."""
