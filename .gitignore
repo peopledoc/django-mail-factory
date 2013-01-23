@@ -12,6 +12,7 @@
 
 # Data files.
 /var/
+/docs/build/
 
 # Python files.
 *.pyc
