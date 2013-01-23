@@ -36,14 +36,8 @@ class BaseMail(object):
                 raise exceptions.MissingMailContextParamException(repr(key))
 
     def get_language(self):
-        # Auto detect the language
-        lang = translation.get_language()  # Get current language
-        try:
-            # Try to get the user language choice
-            lang = self.context['user'].get_profile().language_code
-        except KeyError:
-            pass
-        return lang
+        # Auto detect the current language
+        return translation.get_language()  # Get current language
 
     def get_params(self):
         """Returns the list of mandatory context variables."""
@@ -52,6 +46,10 @@ class BaseMail(object):
     def get_context_data(self, **kwargs):
         """Returns automatic context_data."""
         return kwargs.copy()
+
+    def get_attachments(self, attachments):
+        """Return the attachments."""
+        return attachments
 
     def get_template_part(self, part):
         """Return a mail part
@@ -124,6 +122,8 @@ class BaseMail(object):
     def send(self, emails, attachments, from_email=None):
         """Create the message and send it to emails."""
         msg = self.create_email_msg(emails, from_email=from_email)
+
+        attachments = self.get_attachments(attachments)
 
         if attachments:
             for filepath, filename, mimetype in attachments:
