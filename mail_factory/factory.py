@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from mail_factory import exceptions
 from mail_factory.forms import mailform_factory
+from django.template import TemplateDoesNotExist
 
 
 class MailFactory(object):
@@ -79,7 +80,10 @@ class MailFactory(object):
         """Preview the body.html mail."""
         MailClass = self._get_mail_object(template_name)
         msg = MailClass(context)
-        return msg._render_part('body.html')
+        try:
+            return msg._render_part('body.html')
+        except TemplateDoesNotExist:
+            return '<pre>'+msg._render_part('body.txt')+'</pre>'
 
     def get_raw_content(self, template_name, emails, context, from_email=None):
         """Return raw mail source before sending."""
