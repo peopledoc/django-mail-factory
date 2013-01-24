@@ -6,7 +6,7 @@
 Welcome to django-mail-factory's documentation!
 ===============================================
 
-Django Mail Factory is a little Django app that let's you manage mails
+Django Mail Factory is a little Django app that let's you manage emails
 for your app very easily.
 
 Features
@@ -15,18 +15,18 @@ Features
 Django Mail Factory has support for:
 
  * Multilingual support
- * Administration to preview mails
- * MultiAlternative Mails
+ * Administration to preview emails
+ * Multi-alternatives emails: text and html
  * Attachments
  * HTML inline display of attached images
 
-Other ressources
-----------------
 
-Fork it on:
+Other resources
+---------------
 
- * http://github.com/novagile/django-mail-factory/
- * http://django-mail-factory.rtfd.org/
+Fork it on: http://github.com/novagile/django-mail-factory/
+
+Documentation: http://django-mail-factory.rtfd.org/
 
 
 Get started
@@ -36,11 +36,11 @@ From the github tree::
 
     pip install -e http://github.com/novagile/django-mail-factory/
 
-or after the first release::
+or from PyPI once it's available::
 
     pip intall django-mail-factory
 
-Then add mail_factory to your INSTALLED_APPS::
+Then add ``mail_factory`` to your *INSTALLED_APPS*::
 
     INSTALLED_APPS = (
         ...
@@ -52,75 +52,86 @@ Then add mail_factory to your INSTALLED_APPS::
 Create your first mail
 ----------------------
 
-**my_app/mails.py**::
+:file:`my_app/mails.py`:
+
+.. code-block:: python
 
     from mail_factory import factory
     from mail_factory.mails import BaseMail
 
-    class EmailActivation(BaseMail):
-        template_name = 'email_activation'
-        params = ['user', 'end_date', 'site_name', 'site_url']
+    class WelcomeEmail(BaseMail):
+        template_name = 'activation_email'
+        params = ['user', 'site_name', 'site_url']
 
-    factory.register(EmailActivation)
+    factory.register(WelcomeEmail)
 
-Then you must also create:
+Then you must also create the templates:
 
-    * **templates/mails/email_activation/subject.txt**
-    * **templates/mails/email_activation/body.txt**
-    * **templates/mails/email_activation/body.html** (optional)
+* :file:`templates/mails/activation_email/subject.txt`
+
+::
+
+    [{{site_name }}] Dear {{ user.get_full_name }}, your account is created
+
+
+* :file:`templates/mails/activation_email/body.txt`
+
+::
+
+    Dear {{ user.get_full_name }},
+
+    Your account has been created for the site {{ site_name }}, and is
+    available at {{ site_url }}.
+
+    See you there soon!
+
+
+    The awesome {{ site_name }} team
+
+
+* :file:`templates/mails/activation_email/body.html` (optional)
 
 
 Send a mail
 -----------
 
-**Using the factory**::
+**Using the factory**:
 
-    ...
+.. code-block:: python
+
     from mail_factory import factory
 
-    def create_user(request):
-        ...
-        form = UserCreationForm(request.POST)
-        user = form.save()
 
-        ...
-        
-        factory.mail('email_activation', [user.email],
-                     {'user': user,
-                     'end_date': now()+timedelta(days=10),
-                     'site_name': settings.SITE_NAME,
-                     'site_url': settings.SITE_URL})
-
-        return HttpResponse('User created, a mail has been send')
+    factory.mail('activation_email', [user.email],
+                 {'user': user,
+                  'site_name': settings.SITE_NAME,
+                  'site_url': settings.SITE_URL})
 
 
-**Using the mail class**::
+**Using the mail class**:
 
-    from my_app.mails import EmailActivation
+.. code-block:: python
 
-    ...
+    from my_app.mails import WelcomeEmail
 
-    msg = EmailActivation({
-        'user': user,
-        'end_date': now()+timedelta(days=10),
-        'site_name': settings.SITE_NAME,
-        'site_url': settings.SITE_URL})
+
+    msg = WelcomeEmail({'user': user,
+                           'site_name': settings.SITE_NAME,
+                           'site_url': settings.SITE_URL})
     msg.send([user.email])
 
 
-How it works?
--------------
+How does it work?
+-----------------
 
-At startup, all ``mails.py`` files in your app are autodiscover to
-register your mails in the factory.
+At startup, all :file:`mails.py` files in your application folders are
+automatically discovered and the emails are registered to the factory.
 
-This allows you to directly call your mails from the factory with
-their ``template_name``.
+You can then directly call your emails from the factory with their
+``template_name``.
 
-It also allows you to list your mails in the administration, preview
-you them and test by sending them to a custom address with a custom
-context.
-
+It also allows you to list your emails in the administration, preview and test
+them by sending them to a custom address with a custom context.
 
 
 Contents

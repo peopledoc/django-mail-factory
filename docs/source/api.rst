@@ -2,74 +2,64 @@
 Hacking MailFactory
 ===================
 
-MailFactory is a tool to helps you manage your mails in the real world.
+MailFactory is a tool to help you manage your emails in the real world.
 
-That means that for the same mail, regarding to the context, you may
-want different brandings, different languages, etc.
+That means that for the same email, regarding the context, you may want a
+different branding, different language, etc.
 
 
-Select language for your mails
-==============================
+Specify the language for your emails
+====================================
 
-Sometimes regarding to the context, you may want to select the
-language for the mail.
+If you need to specify the language for your email, other than the currently
+used language, you can do so by overriding the ``get_language`` method on your
+custom class.
 
-Let say that our user have a ``language_code`` as a profile attribute:
+Let's say that our user has a ``language_code`` as a profile attribute:
 
 .. code-block:: python
 
-    class ActivationMail(BaseMail): 
-        template_name = 'activation'        
+    class ActivationEmail(BaseMail):
+        template_name = 'activation'
         params = ['user', 'activation_key']
 
         def get_language(self):
-            lang = BaseMail.get_language(self)  # Get the current language
-            try:
-                # Try to get the user language choice
-                lang = self.context['user'].get_profile().language_code
-            except:
-                pass
-            return lang
+            return self.context['user'].get_profile().language_code
 
 
-Force a param for all mails
-===========================
+Force a param for all emails
+============================
 
-You can overwrite ``get_params`` to add some mandatory parameters for
-all mails:
+You can also overriding the ``get_params`` method of a custom ancestor class to
+add some mandatory parameters for all your emails:
 
 .. code-block:: python
 
-    class MyProjectBaseMail(BaseMail):         
+    class MyProjectBaseMail(BaseMail):
 
         def get_params(self):
-            return self.params + ['user']
+            params = super(MyProjectBaseMail, self).get_params()
+            return params.append('user')
 
-        def get_language(self):
-            lang = self.context['user'].get_profile().language_code
-            return lang
-
-    class ActivationMail(MyProjectBaseMail):
+    class ActivationEmail(MyProjectBaseMail):
         template_name = 'activation'
         params = ['activation_key']
 
-With this, your are certain that every mail would be send it the right
-language since an error will be raise if the user ``language_code`` is
-not found.
+This way, all your emails will have the user in the context by default.
 
 
 Add context data
 ================
 
-If you have some information that must be added to every mail context,
-you can put them here:
+If you have some information that must be added to every email context, you can
+put them here:
 
 .. code-block:: python
 
-    class MyProjectBaseMail(BaseMail):         
+    class MyProjectBaseMail(BaseMail):
 
         def get_context_data(self, **kwargs):
-            data = BaseMail.get_context_data(self, **kwargs)
+            data = super(MyProjectBaseMail, self).get_context_data(**kwargs)
             data['site_name'] = settings.SITE_NAME
             data['site_url'] = settings.SITE_URL
             return data
@@ -78,74 +68,75 @@ you can put them here:
 Add attachments
 ===============
 
-Same thing here, if your branding need a logo or header in every
-mails, you can define it here:
+Same thing here, if your branding needs a logo or a header in every emails, you
+can define it here:
 
 
 .. code-block:: python
 
     from django.contrib.staticfiles import finders
 
-    class MyProjectBaseMail(BaseMail):         
+    class MyProjectBaseMail(BaseMail):
 
-        def get_attachments(self, attachements):
-            attachments = BaseMail.get_attachments(self, attachments) | []
-            attachments.append((finders.find('mails/header.png'),
-                                'header.png', 'image/png'))
-            return attachments
+        def get_attachments(self, files):
+            attach = super(MyProjectBaseMail, self).get_attachments(files)
+            attach.append((finders.find('mails/header.png'),
+                           'header.png', 'image/png'))
+            return attach
 
 
 Template loading
 ================
 
-By default, the template parts will be search in:
+By default, the template parts will be searched in:
 
-   * templates∕mails/{{ template_name }}/{{ language_code }}/
-   * templates∕mails/{{ template_name }}/
+* :file:`templates∕mails/{{ template_name }}/{{ language_code }}/`
+* :file:`templates∕mails/{{ template_name }}/`
 
-But you may want to search in different location. ie:
+But you may want to search in different locations, ie:
 
-  * templates/{{ site.domain }}/mails/{{ template_name }}/
+* :file:`templates/{{ site.domain }}/mails/{{ template_name }}/`
 
 To do that, you can override the ``get_template_part`` method:
 
 .. code-block:: python
 
-    class ActivationMail(BaseMail):
+    class ActivationEmail(BaseMail):
         template_name = 'activation'
         params = ['activation_key', 'site']
 
         def get_template_part(self, part):
             """Return a mail part (body, html body or subject) template
-            
+
             Try in order:
-            
+
             1/ domain specific localized:
                 example.com/mails/activation/fr/
             2/ domain specific:
                 example.com/mails/activation/
-            3/ localized: 
+            3/ default localized:
                 mails/activation/fr/
             4/ fallback:
                 mails/activation/
-            
+
             """
             templates = []
 
-            site = self.context.get('site')
-            if hasattr(site, 'domain'):
-                # 1. {{ domain_name }}/mails/{{ template_name }}/{{ language_code}}/
-                templates.append(path.join(site.domain,
-                                           'mails',
-                                           self.template_name,
-                                           self.lang,
-                                           part)
-                # 2. {{ domain_name }}/mails/{{ template_name }}/
-                templates.append(path.join(site.domain,
-                                           'mails',
-                                           self.template_name,
-                                           part)
-            
-            return templates + BaseMail.get_template_part(self, part)
+            site = self.context['site']
+            # 1/ {{ domain_name }}/mails/{{ template_name }}/{{ language_code}}/
+            templates.append(path.join(site.domain,
+                                       'mails',
+                                       self.template_name,
+                                       self.lang,
+                                       part)
+            # 2/ {{ domain_name }}/mails/{{ template_name }}/
+            templates.append(path.join(site.domain,
+                                       'mails',
+                                       self.template_name,
+                                       part)
+            # 3/ and 4/ provided by the base class
+            base_temps = super(MyProjectBaseMail, self).get_template_part(part)
+            return templates + base_temps
 
-``get_template_part`` returns a list of template and will take the first one available.
+``get_template_part`` returns a list of template and will take the first one
+available.
