@@ -8,5 +8,7 @@ distribution = pkg_resources.get_distribution('mail_factory')
 __version__ = distribution.version
 
 from mail_factory.factory import MailFactory
+from mail_factory.mails import BaseMail
+from mail_factory.forms import MailForm
 
 factory = MailFactory()

@@ -142,3 +142,4 @@ Contents
 
    api
    template
+   interface

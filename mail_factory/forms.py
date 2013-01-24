@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from django import forms
+try:
+    # Try to import floppyforms
+    import floppyforms as forms
+except ImportError:
+    # If django floppyforms is not installed we use django forms.
+    from django import forms
 
 
 class MailForm(forms.Form):
