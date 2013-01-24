@@ -89,7 +89,7 @@ mails, you can define it here:
     class MyProjectBaseMail(BaseMail):         
 
         def get_attachments(self, attachements):
-            attachments = BaseMail.get_attachments(self, attachments) || []
+            attachments = BaseMail.get_attachments(self, attachments) | []
             attachments.append((finders.find('mails/header.png'),
                                 'header.png', 'image/png'))
             return attachments
@@ -143,7 +143,7 @@ To do that, you can override the ``get_template_part`` method:
                 # 2. {{ domain_name }}/mails/{{ template_name }}/
                 templates.append(path.join(site.domain,
                                            'mails',
-                                           self.template_name,=
+                                           self.template_name,
                                            part)
             
             return templates + BaseMail.get_template_part(self, part)
