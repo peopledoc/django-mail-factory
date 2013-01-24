@@ -2,15 +2,15 @@
 The MailFactory Interface
 =========================
 
-In daily work mail branding is important because it will call your
+In daily work email branding is important because it will call your
 custommer to action.
 
-MailFactory comes with a little tool that helps you to try your mails.
+MailFactory comes with a little tool that helps you to test your emails.
 
-To do that, we generate a Django Form so that you will let you provide
-a context for your mail.
+To do that, we generate a Django Form so that you may provide a context for
+your email.
 
-Here we will explain you how you can customize your administration form.
+Here's how you can customize your administration form.
 
 
 Enabling MailFactory administration
@@ -30,13 +30,13 @@ You just need to enable the urls:
     )
 
 Then you can connect to `/admin/mails/
-<http://127.0.0.1:8000/admin/mails/>`_ to try out your mails.
+<http://127.0.0.1:8000/admin/mails/>`_ to try out your emails.
 
 
 Registering a specific form
 ===========================
 
-This two call are equivalent:
+These two calls are equivalent:
 
 .. code-block:: python
 
@@ -64,13 +64,13 @@ This two call are equivalent:
 Creating a custom MailForm
 ==========================
 
-We may also want to build a very specific form for our mail.
+We may also want to build a very specific form for our email.
 
-Let's say we have a share this page mail, with a custom message:
+Let's say we have a *share this page* email, with a custom message:
 
 .. code-block:: python
 
-    from mail_factory import factory, BaseMail
+    from mail_factory import factory, BaseMail, MailForm
 
 
     class SharePageMail(BaseMail):
@@ -90,14 +90,11 @@ Let's say we have a share this page mail, with a custom message:
     factory.register(SharePageMail, SharePageMailForm)
 
 
-Creating your application MailForm
-==================================
+Creating your application custom MailForm
+=========================================
 
-As for BaseMail, you can say that everytime a ``user`` params is
-needed in the mail, it will be a ``ModelChoiceField`` on the
-``auth.models.User``
-
-Let's do that:
+Let's create a project wide BaseMailForm that uses a ``ModelChoiceField`` on
+the ``auth.models.User`` each time a ``user`` param is needed in the email.
 
 .. code-block:: python
 
@@ -113,4 +110,5 @@ Let's do that:
 
             return super(BaseMailForm, self).get_field_for_param(param)
 
-By default, all mail params are created as a ``forms.CharField()``
+By default, all email params are represented as a ``forms.CharField()``, which
+uses a basic test input.
