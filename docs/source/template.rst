@@ -2,7 +2,7 @@
 Mail templates
 ==============
 
-When you want a multipart email, you need to provide a subject, the
+When you want a multi-alternatives email, you need to provide a subject, the
 ``text/plain`` body and the ``text/html`` body.
 
 All these parts are loaded from your email template directory.
@@ -44,7 +44,7 @@ You can also create a different subject file for each language:
     {% endblocktrans %}
 
 
-If you don't provide a ``body.html`` the mail will be send in ``text/plain``
+If you don't provide a ``body.html`` the mail will be sent in ``text/plain``
 only, if it is present, it will be added as an alternative and displayed if the
 user's mail client handles html emails.
 

@@ -16,7 +16,7 @@ Django Mail Factory has support for:
 
  * Multilingual support
  * Administration to preview emails
- * Multipart emails: text and html
+ * Multi-alternatives emails: text and html
  * Attachments
  * HTML inline display of attached images
 
