@@ -2,7 +2,7 @@
 """Django Mail Manager"""
 
 pkg_resources = __import__('pkg_resources')
-distribution = pkg_resources.get_distribution('mail_factory')
+distribution = pkg_resources.get_distribution('django-mail-factory')
 
 #: Module version, as defined in PEP-0396.
 __version__ = distribution.version

@@ -11,7 +11,6 @@ def read_relative_file(filename):
         return f.read()
 
 
-
 name = 'django-mail-factory'
 version = read_relative_file('VERSION').strip()
 readme = read_relative_file('README')
