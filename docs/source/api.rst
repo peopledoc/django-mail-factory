@@ -128,12 +128,12 @@ To do that, you can override the ``get_template_part`` method:
                                        'mails',
                                        self.template_name,
                                        self.lang,
-                                       part)
+                                       part))
             # 2/ {{ domain_name }}/mails/{{ template_name }}/
             templates.append(path.join(site.domain,
                                        'mails',
                                        self.template_name,
-                                       part)
+                                       part))
             # 3/ and 4/ provided by the base class
             base_temps = super(MyProjectBaseMail, self).get_template_part(part)
             return templates + base_temps
