@@ -90,6 +90,54 @@ Let's say we have a *share this page* email, with a custom message:
     factory.register(SharePageMail, SharePageMailForm)
 
 
+Define form initial data
+========================
+
+You can define ``Meta.initial`` to automatically provide a context for
+your mail.
+
+.. code-block:: python
+
+    # -*- coding: utf-8 -*-
+    from django.conf import settings
+    from django.core.urlresolvers import reverse_lazy as reverse
+    
+    from mail_factory import factory, MailForm
+    from postbox.core.mails import BaseMail
+    
+    import datetime
+    import uuid
+    from django import forms
+    
+    
+    class ShareBucketMail(BaseMail):
+        template_name = 'share_bucket'
+        params = ['first_name', 'last_name', 'comment', 'expiration_date',
+                  'activation_url']
+    
+    
+    def activation_url():
+        return '%s%s' % (
+            settings.SITE_URL, reverse('share:index',
+                                       args=[str(uuid.uuid4()).replace('-', '')]))
+
+
+    class ShareBucketForm(MailForm):
+        expiration_date = forms.DateField()
+    
+        class Meta:
+            initial = {'first_name': 'Thibaut',
+                       'last_name': 'Dupont',
+                       'comment': 'I shared with you documents we talked about.',
+                       'expiration_date': datetime.date.today,
+                       'activation_url': activation_url}
+            mail_class = ShareBucketMail
+    
+    factory.register(ShareBucketMail, ShareBucketForm)
+
+Then the mail form will be autopopulated with this data.
+
+
 Creating your application custom MailForm
 =========================================
 
