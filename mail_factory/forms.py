@@ -12,7 +12,10 @@ class MailForm(forms.Form):
     """Prepopulated the form using mail params."""
 
     def __init__(self, *args, **kwargs):
-        self._meta = self.Meta
+        self._meta = None
+
+        if hasattr(self, 'Meta'):
+            self._meta = self.Meta
 
         if hasattr(self._meta, 'initial'):
             kwargs['initial'] = self._meta.initial
