@@ -7,7 +7,7 @@ Welcome to django-mail-factory's documentation!
 ===============================================
 
 Django Mail Factory is a little Django app that let's you manage emails
-for your app very easily.
+for your project very easily.
 
 Features
 --------
@@ -71,14 +71,14 @@ Then you must also create the templates:
 
 ::
 
-    [{{site_name }}] Dear {{ user.get_full_name }}, your account is created
+    [{{site_name }}] Dear {{ user.first_name }}, your account is created
 
 
 * :file:`templates/mails/activation_email/body.txt`
 
 ::
 
-    Dear {{ user.get_full_name }},
+    Dear {{ user.first_name }},
 
     Your account has been created for the site {{ site_name }}, and is
     available at {{ site_url }}.
@@ -116,8 +116,8 @@ Send a mail
 
 
     msg = WelcomeEmail({'user': user,
-                           'site_name': settings.SITE_NAME,
-                           'site_url': settings.SITE_URL})
+                        'site_name': settings.SITE_NAME,
+                        'site_url': settings.SITE_URL})
     msg.send([user.email])
 
 
