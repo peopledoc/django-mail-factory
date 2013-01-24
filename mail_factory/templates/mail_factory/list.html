@@ -60,13 +60,18 @@
                   <div class="text">Email</div>
                   <div class="clear"></div>
                 </th>
+                <th scope="col">
+                  <div class="text">Template</div>
+                  <div class="clear"></div>
+                </th>
               </tr>
             </thead>
             <tbody>
-              {% for template_name in mail_map.keys %}
+              {% for template_name, mail_name in mail_map %}
               <tr class="{% cycle 'row1' 'row2' %}">
-                <th class="nowrap"><a href="{{ template_name }}/">{{ template_name }}</a></th>
-              </tr>
+                <th class="nowrap"><a href="{{ template_name }}/">{{ mail_name }}</a></th>
+		<td>{{ template_name }}</td>
+	      </tr>
               {% endfor %}
 
             </tbody>

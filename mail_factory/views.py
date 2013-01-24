@@ -16,7 +16,11 @@ class MailListView(TemplateView):
     def get_context_data(self, **kwargs):
         """Return object_list."""
         data = super(MailListView, self).get_context_data(**kwargs)
-        data['mail_map'] = factory.mail_map
+        mail_list = []
+        
+        for mail_name, mail_class in sorted(factory.mail_map.items(), key=lambda x: x[0]):
+            mail_list.append((mail_name, mail_class.__name__))
+        data['mail_map'] = mail_list
         return data
 
 
