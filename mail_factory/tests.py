@@ -47,7 +47,7 @@ class MailFactoryFormTestCase(TestCase):
         mailform_class = CommentForm
         mailform = mailform_class()
 
-        self.assertEqual(mailform.fields.keyOrder, ['content', 'title'])
+        self.assertEqual(mailform.fields.keyOrder, ['content'])
         self.assertEqual(mailform.mail, CommentMail)
         self.assertIn('content', mailform.fields)
 

@@ -38,7 +38,7 @@ class MailForm(forms.Form):
                 if param not in self.fields:
                     self.fields[param] = self.get_field_for_param(param)
 
-            self.fields.keyOrder = list(set(self.mail.params + self.fields.keyOrder))
+            self.fields.keyOrder = self.mail.params
 
     def get_field_for_param(self, param):
         """By default always return a CharField for a param."""
