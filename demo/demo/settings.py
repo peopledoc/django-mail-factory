@@ -1,4 +1,6 @@
 # Django settings for demo project.
+import os
+import sys
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -6,6 +8,10 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
+
+sys.path[0:0] = [
+    os.path.dirname(__file__),
+]
 
 MANAGERS = ADMINS
 
@@ -115,7 +121,9 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admin',
     'mail_factory',
+    'comments',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

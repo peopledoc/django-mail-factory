@@ -8,7 +8,7 @@ distribution = pkg_resources.get_distribution('django-mail-factory')
 __version__ = distribution.version
 
 from mail_factory.factory import MailFactory
-from mail_factory.mails import BaseMail
-from mail_factory.forms import MailForm
+from mail_factory.mails import BaseMail  # NOQA
+from mail_factory.forms import MailForm  # NOQA
 
 factory = MailFactory()

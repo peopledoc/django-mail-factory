@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 
 try:
     # Try to import floppyforms
     import floppyforms as forms
+
+    if not 'floppyforms' in settings.INSTALLED_APPS:
+        raise ImportError
+
 except ImportError:
     # If django floppyforms is not installed we use django forms.
     from django import forms
@@ -33,7 +38,7 @@ class MailForm(forms.Form):
                 if param not in self.fields:
                     self.fields[param] = self.get_field_for_param(param)
 
-            self.fields.keyOrder = self.mail.params
+            self.fields.keyOrder = list(set(self.mail.params + self.fields.keyOrder))
 
     def get_field_for_param(self, param):
         """By default always return a CharField for a param."""

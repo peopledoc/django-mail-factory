@@ -2,11 +2,16 @@
 from django.conf import settings
 from django.core import mail
 from django.test import TestCase
+from django.core.urlresolvers import reverse
 from django.utils import translation
+from django import forms
+from django.contrib.auth.models import User
+from django.test import Client
 
 from mail_factory import factory
 from mail_factory.exceptions import MailFactoryError
 from mail_factory.mails import BaseMail
+from mail_factory.forms import mailform_factory, MailForm
 
 
 class TestMail(BaseMail):
@@ -14,10 +19,100 @@ class TestMail(BaseMail):
     params = ['title']
 
 
+class MailFactoryFormTestCase(TestCase):
+    def test_mailform_factory(self):
+        mailform_class = mailform_factory(TestMail)
+
+        mailform = mailform_class()
+
+        self.assertEqual(mailform.fields.keyOrder, TestMail.params)
+        self.assertEqual(mailform.mail, TestMail)
+
+    def test_mailform_factory_with_existing_meta(self):
+        class CommentMail(BaseMail):
+            template_name = 'comment'
+            params = ['content']
+
+        class CommentForm(MailForm):
+            title = forms.CharField()
+
+            class Meta:
+                initial = {
+                    'title': 'My subject',
+                    'content': 'My content'
+                }
+
+                mail_class = CommentMail
+
+        mailform_class = CommentForm
+        mailform = mailform_class()
+
+        self.assertEqual(mailform.fields.keyOrder, ['content', 'title'])
+        self.assertEqual(mailform.mail, CommentMail)
+        self.assertIn('content', mailform.fields)
+
+
+class MailFactoryViewsTestCase(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser('newbie', None, '$ecret')
+        self.client = Client()
+
+    def test_mail_list_view(self):
+        self.client.login(username='newbie', password='$ecret')
+        response = self.client.get(reverse('mail_factory_list'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'mail_factory/list.html')
+
+    def test_mail_form_view(self):
+        self.client.login(username='newbie', password='$ecret')
+        response = self.client.get(reverse('mail_factory_form', kwargs={
+            'mail_name': 'unknown'
+        }))
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(reverse('mail_factory_form', kwargs={
+            'mail_name': 'comments'
+        }))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'mail_factory/form.html')
+
+    def test_mail_form_complete(self):
+        self.client.login(username='newbie', password='$ecret')
+
+        response = self.client.post(reverse('mail_factory_form', kwargs={
+            'mail_name': 'comments',
+        }), data={
+            'email': 'newbie@localhost',
+            'send': 1,
+            'title': 'Subject',
+            'content': 'Content'
+        })
+
+        self.assertRedirects(response, reverse('mail_factory_list'))
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        out = mail.outbox[0]
+
+        self.assertEqual(out.subject, 'Subject')
+        self.assertEqual(out.to, ['newbie@localhost'])
+
+        response = self.client.post(reverse('mail_factory_form', kwargs={
+            'mail_name': 'comments',
+        }), data={
+            'email': 'newbie@localhost',
+            'raw': 1,
+            'title': 'Subject',
+            'content': 'Content'
+        })
+
+        self.assertEqual(response.status_code, 200)
+
+
 class MailFactoryRegistrationTestCase(TestCase):
-
     def test_factory_registration(self):
-
         factory.register(TestMail)
         self.assertIn('test', factory.mail_map)
 
