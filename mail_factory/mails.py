@@ -51,8 +51,8 @@ class BaseMail(object):
         """Return the attachments."""
         if attachments:
             return attachments
-        else:
-            return []
+
+        return []
 
     def get_template_part(self, part):
         """Return a mail part

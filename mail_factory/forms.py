@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 
 try:
     # Try to import floppyforms
     import floppyforms as forms
+
+    if not 'floppyforms' in settings.INSTALLED_APPS:
+        raise ImportError
+
 except ImportError:
     # If django floppyforms is not installed we use django forms.
     from django import forms
