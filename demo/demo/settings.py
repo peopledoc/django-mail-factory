@@ -9,9 +9,7 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
-sys.path[0:0] = [
-    os.path.dirname(__file__),
-]
+sys.path.insert(0, os.path.dirname(__file__))
 
 MANAGERS = ADMINS
 
