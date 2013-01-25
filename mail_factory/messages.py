@@ -40,9 +40,10 @@ class EmailMultiRelated(EmailMultiAlternatives):
             assert content is not None
             self.related_attachments.append((filename, content, mimetype))
 
-    def attach_related_file(self, path, mimetype=None):
+    def attach_related_file(self, path, mimetype=None, filename=None):
         """Attaches a file from the filesystem."""
-        filename = basename(path)
+        if not filename:
+            filename = basename(path)
         content = open(path, 'rb').read()
         self.attach_related(filename, content, mimetype)
 

@@ -131,7 +131,10 @@ class BaseMail(object):
         if attachments:
             for filepath, filename, mimetype in attachments:
                 with open(filepath, 'rb') as attachment:
-                    msg.attach(filename, attachment.read(), mimetype)
+                    if mimetype.startswith('image'):
+                        msg.attach_related_file(filepath, mimetype, filename)
+                    else:
+                        msg.attach(filename, attachment.read(), mimetype)
 
         msg.send()
 
