@@ -49,7 +49,10 @@ class BaseMail(object):
 
     def get_attachments(self, attachments):
         """Return the attachments."""
-        return attachments
+        if attachments:
+            return attachments
+        else:
+            return []
 
     def get_template_part(self, part):
         """Return a mail part
