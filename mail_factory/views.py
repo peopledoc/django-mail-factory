@@ -3,10 +3,12 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.views.generic import TemplateView, FormView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 
 from mail_factory import factory
+
+admin_required = user_passes_test(lambda x: x.is_superuser)
 
 
 class MailListView(TemplateView):
@@ -17,8 +19,9 @@ class MailListView(TemplateView):
         """Return object_list."""
         data = super(MailListView, self).get_context_data(**kwargs)
         mail_list = []
-        
-        for mail_name, mail_class in sorted(factory.mail_map.items(), key=lambda x: x[0]):
+
+        for mail_name, mail_class in sorted(factory.mail_map.items(),
+                                            key=lambda x: x[0]):
             mail_list.append((mail_name, mail_class.__name__))
         data['mail_map'] = mail_list
         return data
@@ -44,9 +47,10 @@ class MailFormView(FormView):
     def form_valid(self, form):
         if self.raw:
             return HttpResponse('<pre>%s</pre>' %
-                factory.get_raw_content(self.mail_name,
-                                        [settings.DEFAULT_FROM_EMAIL],
-                                        form.cleaned_data).message())
+                                factory.get_raw_content(
+                                    self.mail_name,
+                                    [settings.DEFAULT_FROM_EMAIL],
+                                    form.cleaned_data).message())
         elif self.send:
             factory.mail(self.mail_name, [self.email], form.cleaned_data)
             messages.success(self.request,
@@ -70,5 +74,5 @@ class MailFormView(FormView):
         return data
 
 
-mail_list = login_required(MailListView.as_view())
-form = login_required(MailFormView.as_view())
+mail_list = admin_required(MailListView.as_view())
+form = admin_required(MailFormView.as_view())

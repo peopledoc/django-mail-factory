@@ -80,10 +80,7 @@ class MailFactory(object):
         """Preview the body.html mail."""
         MailClass = self._get_mail_object(template_name)
         msg = MailClass(context)
-        try:
-            return msg._render_part('body.html')
-        except TemplateDoesNotExist:
-            return '<pre>'+msg._render_part('body.txt')+'</pre>'
+        return msg._render_part('body.html')
 
     def get_raw_content(self, template_name, emails, context, from_email=None):
         """Return raw mail source before sending."""
