@@ -51,16 +51,16 @@ class MailFormView(FormView):
                                     self.mail_name,
                                     [settings.DEFAULT_FROM_EMAIL],
                                     form.cleaned_data).message())
-        elif self.send:
+
+        if self.send:
             factory.mail(self.mail_name, [self.email], form.cleaned_data)
             messages.success(self.request,
                              '%s mail sent to %s' % (self.mail_name,
                                                      self.email))
             return redirect('mail_factory_list')
 
-        else:
-            return HttpResponse(
-                factory.get_html_for(self.mail_name, form.cleaned_data))
+        return HttpResponse(
+            factory.get_html_for(self.mail_name, form.cleaned_data))
 
     def get_context_data(self, **kwargs):
         data = super(MailFormView, self).get_context_data(**kwargs)
