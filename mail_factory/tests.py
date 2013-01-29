@@ -47,14 +47,15 @@ class MailFactoryFormTestCase(TestCase):
         mailform_class = CommentForm
         mailform = mailform_class()
 
-        self.assertEqual(mailform.fields.keyOrder, ['content'])
+        self.assertEqual(mailform.fields.keyOrder, ['content', 'title'])
         self.assertEqual(mailform.mail, CommentMail)
         self.assertIn('content', mailform.fields)
 
 
 class MailFactoryViewsTestCase(TestCase):
     def setUp(self):
-        self.superuser = User.objects.create_superuser('newbie', None, '$ecret')
+        self.superuser = User.objects.create_superuser('newbie', None,
+                                                       '$ecret')
         self.client = Client()
 
     def test_mail_list_view(self):

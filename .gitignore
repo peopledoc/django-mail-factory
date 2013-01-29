@@ -27,3 +27,4 @@
 
 # Buildout files.
 .mr.developer.cfg
+.coverage

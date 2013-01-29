@@ -5,6 +5,7 @@ try:
     # Try to import floppyforms
     import floppyforms as forms
 
+    # If we can import it but we don't want to use it
     if not 'floppyforms' in settings.INSTALLED_APPS:
         raise ImportError
 
@@ -38,7 +39,10 @@ class MailForm(forms.Form):
                 if param not in self.fields:
                     self.fields[param] = self.get_field_for_param(param)
 
-            self.fields.keyOrder = self.mail.params
+            keyOrder = self.mail.params
+            keyOrder += [x for x in self.fields.keyOrder
+                         if x not in self.mail.params]
+            self.fields.keyOrder = keyOrder
 
     def get_field_for_param(self, param):
         """By default always return a CharField for a param."""
