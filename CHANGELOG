@@ -1,5 +1,14 @@
 Changelog
 =========
 
-0.1 (unreleased)
+0.1 (2013-01-29)
 ----------------
+
+ - Mail Administration
+ - Unittest with coverage
+ - EmailRelated to get inline images
+ - Documentation
+ - Create MailFactory
+ - Create BaseMail
+ - Create MailForm
+ - Demo app
