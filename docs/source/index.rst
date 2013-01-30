@@ -38,7 +38,7 @@ From the github tree::
 
 or from PyPI once it's available::
 
-    pip intall django-mail-factory
+    pip install django-mail-factory
 
 Then add ``mail_factory`` to your *INSTALLED_APPS*::
 
