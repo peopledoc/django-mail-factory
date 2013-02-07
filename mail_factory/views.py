@@ -45,6 +45,12 @@ class MailDetailView(TemplateView):
 
         return super(MailDetailView, self).dispatch(request)
 
+    def render_to_response(self, context, **response_kwargs):
+        if self.mimetype != 'html' or not 'body_html' in context:
+            return super(MailDetailView, self).render_to_response(context, **response_kwargs)
+
+        return HttpResponse(context['body_html'])
+
     def get_context_data(self, **kwargs):
         data = super(MailDetailView, self).get_context_data(**kwargs)
 
