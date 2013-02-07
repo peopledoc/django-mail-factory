@@ -25,14 +25,16 @@ class BaseMail(object):
 
     def __init__(self, context):
         """Create a mail instance from a context."""
+
         # Create the context
         c = self.get_context_data(**context)
+
         self.context = Context(c)
         self.lang = self.get_language()
 
         # Check that all the mandatory context is present.
         for key in self.get_params():
-            if not key in context:
+            if not key in c:
                 raise exceptions.MissingMailContextParamException(repr(key))
 
     def get_language(self):

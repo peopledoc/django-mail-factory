@@ -1,63 +1,77 @@
-{% extends "admin/base_site.html" %}
-{% load i18n admin_static admin_list %}
+{% extends "mail_factory/base.html" %}
 {% load url from future %}
-{% load admin_urls %}
-
-{% block extrastyle %}
-  {{ block.super }}
-  <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}" />
-  {% if cl.formset %}
-    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />
-  {% endif %}
-  {% if cl.formset or action_form %}
-    {% url 'admin:jsi18n' as jsi18nurl %}
-    <script type="text/javascript" src="{{ jsi18nurl|default:'../../jsi18n/' }}"></script>
-  {% endif %}
-  {{ media.css }}
-  {% if not actions_on_top and not actions_on_bottom %}
-    <style>
-      #changelist table thead th:first-child {width: inherit}
-    </style>
-  {% endif %}
-{% endblock %}
-
-{% block extrahead %}
-{{ block.super }}
-{{ media.js }}
-{% if action_form %}{% if actions_on_top or actions_on_bottom %}
-<script type="text/javascript">
-(function($) {
-    $(document).ready(function($) {
-        $("tr input.action-select").actions();
-    });
-})(django.jQuery);
-</script>
-{% endif %}{% endif %}
-{% endblock %}
-
-{% block bodyclass %}change-list{% endblock %}
+{% load i18n %}
 
 {% if not is_popup %}
-{% block breadcrumbs %}
-<div class="breadcrumbs">
-<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-&rsaquo; <a href="{% url 'mail_factory_list' %}">Mail Factory</a>
-</div>
-{% endblock %}
+    {% block breadcrumbs %}
+        <div class="breadcrumbs">
+            <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+            &rsaquo; <a href="{% url 'mail_factory_list' %}">Mail Factory</a>
+        </div>
+    {% endblock %}
 {% endif %}
 
-{% block coltype %}flex{% endblock %}
+{% block extrahead %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        (function($) {
+            $(document).ready(function() {
+                $('.content-switcher').click(function(e) {
+                    e.preventDefault();
+
+                    var parent = $(this).parent(),
+                        lang = parent.find('.focus').toggleClass('focus').data('lang');
+
+                    console.log(lang);
+
+                    $('#frame-' + lang).hide();
+
+                    lang = $(this).toggleClass('focus').data('lang');
+
+                    $('#frame-' + lang).show();
+                });
+            });
+        })(jQuery);
+    </script>
+
+    <style type="text/css">
+        .focus {
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
 
 {% block content %}
-  <div id="content-main">
-    <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
-    <form method="post">{% csrf_token %}
-      {{ form.as_p }}
-      <input type="submit" value="Get HTML mail content" />
-      <input type="submit" name="raw" value="Get raw mail" /><br/>
-      <input type="text" name="email" value="{{ admin_email }}" />
-      <input type="submit" name="send" value="Send to mail" />
-    </form>
+    <div id="content-main">
+        <div class="content">
+            <h2>View mail</h2>
+            <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+                <div>
+                    {% for language_code, language in languages %}
+                        <a href="#" data-lang="{{ language_code }}" class="content-switcher{% if lang == language_code %} focus{% endif %}">{{ language }}</a>
+                        {% if not forloop.last %}
+                            |
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% for language_code, language in languages %}
+                    <iframe src="{% url "mail_factory_detail" mail_name=mail_name lang=language_code %}" width="650" frameborder="no" height="500"{% if language_code != lang %} style="display: none;"{% endif %} id="frame-{{ language_code }}"></iframe>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="content">
+            <h2>Send mail</h2>
+            <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+                <form method="post">{% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="Get HTML mail content" />
+                    <input type="submit" name="raw" value="Get raw mail" /><br/>
+                    <input type="text" name="email" value="{{ admin_email }}" />
+                    <input type="submit" name="send" value="Send to mail" />
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 {% endblock %}
