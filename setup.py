@@ -13,7 +13,7 @@ def read_relative_file(filename):
 
 name = 'django-mail-factory'
 version = read_relative_file('VERSION').strip()
-readme = read_relative_file('README')
+readme = read_relative_file('README.rst')
 requirements = ['setuptools']
 entry_points = {}
 
