@@ -69,8 +69,8 @@ class MailFactory(object):
     def mail(self, template_name, emails, context,
              attachments=None, from_email=None):
         """Send a mail from the template_name."""
-        self.get_mail_object(template_name, context) \
-            .send(emails, attachments, from_email)
+        return (self.get_mail_object(template_name, context)
+                    .send(emails, attachments, from_email))
 
     def mail_admins(self, template_name, context,
                     attachments=None, from_email=None):

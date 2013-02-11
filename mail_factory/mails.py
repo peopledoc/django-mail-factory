@@ -140,6 +140,8 @@ class BaseMail(object):
 
         msg.send()
 
+        return msg
+
     def mail_admins(self, attachments=None, from_email=None):
         """Send email to admins."""
         self.send(settings.ADMINS, attachments, from_email)
