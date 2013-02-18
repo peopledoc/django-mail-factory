@@ -56,7 +56,7 @@ class BaseMail(object):
 
         return []
 
-    def get_template_part(self, part):
+    def get_template_part(self, part, lang=None):
         """Return a mail part
 
           * subject.txt
@@ -71,7 +71,7 @@ class BaseMail(object):
         """
         templates = []
         # 1/ localized: mails/invitation_code/fr/
-        localized = join('mails', self.template_name, self.lang, part)
+        localized = join('mails', self.template_name, lang or self.lang, part)
         templates.append(localized)
 
         # 2/ fallback: mails/invitation_code/
@@ -81,7 +81,7 @@ class BaseMail(object):
         # return the list of templates path candidates
         return templates
 
-    def _render_part(self, part):
+    def _render_part(self, part, lang=None):
         """Render a mail part against the mail context.
 
         Part can be:
@@ -91,26 +91,26 @@ class BaseMail(object):
           * body.html
 
         """
-        tpl = select_template(self.get_template_part(part))
+        tpl = select_template(self.get_template_part(part, lang=lang))
         cur_lang = translation.get_language()
         try:
-            translation.activate(self.lang)
+            translation.activate(lang or self.lang)
             rendered = tpl.render(self.context)
         finally:
             translation.activate(cur_lang)
         return rendered.strip()
 
-    def create_email_msg(self, emails, from_email=None):
+    def create_email_msg(self, emails, from_email=None, lang=None):
         """Create an email message instance."""
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
-        subject = self._render_part('subject.txt')
+        subject = self._render_part('subject.txt', lang=lang)
         try:
-            body = self._render_part('body.txt')
+            body = self._render_part('body.txt', lang=lang)
         except TemplateDoesNotExist:
             body = ''
         try:
-            html_content = self._render_part('body.html')
+            html_content = self._render_part('body.html', lang=lang)
         except TemplateDoesNotExist:
             html_content = None
 

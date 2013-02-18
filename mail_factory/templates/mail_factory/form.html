@@ -20,11 +20,15 @@
                 $('.content-switcher').click(function(e) {
                     e.preventDefault();
 
-                    var parent = $(this).parent();
+                    var old = $(this).parent().parent().find('.focus');
 
-                    parent.find('.focus').toggleClass('focus')
+                    old.toggleClass('focus');
 
-                    $('#iframe-container').html('<iframe src="' + $(this).attr('href') + '" width="650" frameborder="no" height="500"></iframe>');
+                    $(old.data('target')).hide();
+
+                    $(this).toggleClass('focus');
+
+                    $($(this).data('target')).show();
                 });
             });
         })(jQuery);
@@ -56,21 +60,53 @@
     <div id="content-main">
         <div class="content">
             <h2>View mail</h2>
-            <div>
+            <div class="language-choices">
                 <ul class="choices">
                 {% for language_code, language in languages %}
                     <li>
-                        {{ language }}
-                        <a href="{% url "mail_factory_detail" mail_name=mail_name lang=language_code mimetype="txt" %}" data-lang="{{ language_code }}" data-mimetype="txt" class="content-switcher">txt</a>
-                        | <a href="{% url "mail_factory_detail" mail_name=mail_name lang=language_code mimetype="html" %}" data-lang="{{ language_code }}" data-mimetype="html" class="content-switcher">html</a>
+                        <a href="#" data-lang="{{ language_code }}" class="content-switcher{% if lang == language_code %} focus{% endif %}" data-target="#email-{{ language_code }}">{{ language }}</a>
                     </li>
                 {% endfor %}
                 </ul>
                 <div class="clear"></div>
             </div>
 
-            <div id="iframe-container">
+            <div class="content-choices">
+                <ul class="choices">
+                    {% for language_code, message in preview_messages.items %}
+                        <li{% if lang != language_code %} style="display: none;"{% endif %} id="email-{{ language_code }}">
+                            <div class="email-message">
+                                <h3>
+                                    {{ message.subject }}
+                                </h3>
+
+                                <ul class="choices">
+                                    <li><a href="#" class="focus content-switcher" data-target="body-text-{{ language_code }}">txt</a></li>
+                                    {% if message.body_html %}
+                                        <li><a href="#" class="focus content-switcher" data-target="body-html-{{ language_code }}">html</a></li>
+                                    {% endif %}
+                                </ul>
+
+                                <div class="clear"></div>
+
+                                <div id="body-text-{{ language_code }}">
+                                    {{ message.body|linebreaks }}
+                                </div>
+
+                                {% if message.body_html %}
+                                    <div id="body-html-{{ language_code }}">
+                                        <iframe src="data:text/html;base64,{{ message.body_html_escaped }}" frameborder="0" allowtransparency="true"></iframe>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
+        </div>
+
+        <hr />
+
         <div class="content">
             <h2>Send mail</h2>
             <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
