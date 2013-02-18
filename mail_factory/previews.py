@@ -33,22 +33,27 @@ class PreviewSite(object):
 
 
 class BasePreviewMail(object):
-    def __init__(self, site, **kwargs):
+    def __init__(self, site):
         self.site = site
-
-        self.mail = self.mail_class(self.get_context_data(**kwargs))
 
     def get_message(self, lang=None):
         return PreviewMessage(self.mail.create_email_msg(self.get_email_receivers(),
                                                          lang=lang))
 
     @property
+    def mail(self):
+        if not hasattr(self, '_mail'):
+            self._mail = self.mail_class(self.get_context_data())
+
+        return self._mail
+
+    @property
     def module(self):
-        return '%s' % self.mail.__module__
+        return '%s' % self.mail_class.__module__
 
     @property
     def name(self):
-        return '%s' % self.mail.__class__.__name__
+        return '%s' % self.mail_class.__name__
 
     def get_email_receivers(self):
         return [settings.SERVER_EMAIL, ]
