@@ -58,6 +58,7 @@
 
 {% block content %}
     <div id="content-main">
+        {% if preview %}
         <div class="content">
             <h2>View mail</h2>
             <div class="language-choices">
@@ -104,8 +105,8 @@
                 </ul>
             </div>
         </div>
-
         <hr />
+        {% endif %}
 
         <div class="content">
             <h2>Send mail</h2>
