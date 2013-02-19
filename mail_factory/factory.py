@@ -27,7 +27,7 @@ class MailFactory(object):
             self.form_map[mail_klass.template_name] = mail_form
         else:
             self.form_map[mail_klass.template_name] = \
-                mailform_factory(mail_klass, mail_form)
+                mailform_factory(mail_klass, self.mail_form)
 
     def unregister(self, mail_klass):
         """Unregister a Mail class from the factory map."""
