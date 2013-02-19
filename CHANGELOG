@@ -1,8 +1,11 @@
 Changelog
 =========
 
-0.2 (unreleased)
+0.2 (2013-02-19)
 ----------------
+
+ - Custom base mail form in the factory
+ - Strip subject
 
 
 0.1 (2013-01-29)
