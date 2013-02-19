@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from mail_factory import exceptions
-from mail_factory.forms import mailform_factory
+from mail_factory.forms import mailform_factory, MailForm
 
 
 class MailFactory(object):
+    mail_form = MailForm
     mail_map = {}
     form_map = {}
 
@@ -26,7 +27,7 @@ class MailFactory(object):
             self.form_map[mail_klass.template_name] = mail_form
         else:
             self.form_map[mail_klass.template_name] = \
-                mailform_factory(mail_klass)
+                mailform_factory(mail_klass, self.mail_form)
 
     def unregister(self, mail_klass):
         """Unregister a Mail class from the factory map."""

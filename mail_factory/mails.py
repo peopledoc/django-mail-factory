@@ -23,9 +23,10 @@ class BaseMail(object):
      * get_template_part: to get the list of possible paths to get parts.
     """
 
-    def __init__(self, context):
+    def __init__(self, context=None):
         """Create a mail instance from a context."""
         # Create the context
+        context = context or {}
         c = self.get_context_data(**context)
         self.context = Context(c)
         self.lang = self.get_language()
