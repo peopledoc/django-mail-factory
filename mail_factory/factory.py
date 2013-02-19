@@ -12,12 +12,12 @@ class MailFactory(object):
         """Register a Mail class from the factory map."""
         if not hasattr(mail_klass, 'template_name'):
             raise exceptions.MailFactoryError(
-                "%s doesn't have a template_name and cannot be register." % (
+                "%s doesn't have a template_name and cannot be registered." % (
                     mail_klass.__name__))
 
         if mail_klass.template_name in self.mail_map:
             raise exceptions.MailFactoryError(
-                '%s is already register for %s.' % (
+                '%s is already registered for %s.' % (
                     mail_klass.template_name,
                     self.mail_map[mail_klass.template_name].__name__))
 
@@ -50,7 +50,7 @@ class MailFactory(object):
         template_name."""
         if not template_name in self.mail_map:
             raise exceptions.MailFactoryError(
-                '%s is not register.' % template_name)
+                '%s is not registered.' % template_name)
 
         return self.mail_map[template_name]
 
@@ -60,7 +60,7 @@ class MailFactory(object):
                 return self.form_map[template_name]
             except KeyError:
                 raise exceptions.MailFactoryError(
-                    "%s is register but doesn't have a form."
+                    "%s is registered but doesn't have a form."
                     "Please restart your server" % template_name)
 
     def mail(self, template_name, emails, context,
