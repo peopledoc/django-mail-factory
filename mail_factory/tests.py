@@ -160,6 +160,16 @@ class MailFactoryTestCase(TestCase):
         message = factory.get_html_for('test', {'title': 'Et hop'})
         self.assertIn('Et hop', message)
 
+    def test_text_for(self):
+        """Get the text body of the mail."""
+        message = factory.get_text_for('test', {'title': 'Et hop'})
+        self.assertIn('Et hop', message)
+
+    def test_subject_for(self):
+        """Get the subject of the mail."""
+        subject = factory.get_subject_for('test', {'title': 'Et hop'})
+        self.assertEqual(subject, "[TestCase] Mail test subject")
+
     def test_get_raw_content(self):
         """Get the message object."""
         message = factory.get_raw_content('test', ['test@mail.com'],

@@ -83,6 +83,18 @@ class MailFactory(object):
         msg = MailClass(context)
         return msg._render_part('body.html')
 
+    def get_text_for(self, template_name, context):
+        """Return the rendered mail text body."""
+        MailClass = self._get_mail_object(template_name)
+        msg = MailClass(context)
+        return msg._render_part('body.txt')
+
+    def get_subject_for(self, template_name, context):
+        """Return the rendered mail subject."""
+        MailClass = self._get_mail_object(template_name)
+        msg = MailClass(context)
+        return msg._render_part('subject.txt')
+
     def get_raw_content(self, template_name, emails, context, from_email=None):
         """Return raw mail source before sending."""
         MailClass = self._get_mail_object(template_name)
