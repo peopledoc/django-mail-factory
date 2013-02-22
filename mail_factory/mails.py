@@ -50,10 +50,7 @@ class BaseMail(object):
 
     def get_attachments(self, attachments):
         """Return the attachments."""
-        if attachments:
-            return attachments
-
-        return []
+        return attachments or []
 
     def get_template_part(self, part):
         """Return a mail part
