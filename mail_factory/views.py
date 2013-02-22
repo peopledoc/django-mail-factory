@@ -5,6 +5,7 @@ from django.http import Http404, HttpResponse
 from django.views.generic import TemplateView, FormView
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
+from django.utils import translation
 
 from mail_factory import factory
 
@@ -32,8 +33,11 @@ class MailFormView(FormView):
 
     def dispatch(self, request, mail_name):
         self.mail_name = mail_name
+
         if self.mail_name not in factory.mail_map:
             raise Http404
+
+        self.mail_class = factory.mail_map[self.mail_name]
 
         self.raw = 'raw' in request.POST
         self.send = 'send' in request.POST
@@ -64,6 +68,22 @@ class MailFormView(FormView):
 
     def get_context_data(self, **kwargs):
         data = super(MailFormView, self).get_context_data(**kwargs)
+
+
+        data.update({
+            'mail_name': self.mail_name,
+            'lang': translation.get_language(),
+            'languages': settings.LANGUAGES,
+        })
+
+        if self.mail_class.template_name in factory.preview_map:
+            preview = factory.preview_map[self.mail_class.template_name]()
+
+            data['preview'] = preview
+            data['preview_messages'] = dict((language_code,
+                                             preview.get_message(lang=language_code)) 
+                                            for language_code, language in settings.LANGUAGES)
+
         try:
             data['admin_email'] = settings.ADMINS[0][1]
         except IndexError:

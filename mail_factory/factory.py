@@ -7,8 +7,9 @@ class MailFactory(object):
     mail_form = MailForm
     mail_map = {}
     form_map = {}
+    preview_map = {}
 
-    def register(self, mail_klass, mail_form=None):
+    def register(self, mail_klass, mail_form=None, mail_preview=None):
         """Register a Mail class from the factory map."""
         if not hasattr(mail_klass, 'template_name'):
             raise exceptions.MailFactoryError(
@@ -29,6 +30,9 @@ class MailFactory(object):
             self.form_map[mail_klass.template_name] = \
                 mailform_factory(mail_klass, self.mail_form)
 
+        if mail_preview:
+            self.preview_map[mail_klass.template_name] = mail_preview
+
     def unregister(self, mail_klass):
         """Unregister a Mail class from the factory map."""
         if not mail_klass.template_name in self.mail_map:
@@ -42,8 +46,13 @@ class MailFactory(object):
                     self.mail_map[mail_klass.template_name].__name__,
                     mail_klass.__name__))
 
-        del self.mail_map[mail_klass.template_name]
-        del self.form_map[mail_klass.template_name]
+        key = mail_klass.template_name
+
+        del self.mail_map[key]
+        del self.form_map[key]
+
+        if key in self.preview_map:
+            del self.preview_map[key]
 
     def _get_mail_class(self, template_name):
         """Returns the MailClass from the registration map and its
