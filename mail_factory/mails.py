@@ -99,7 +99,7 @@ class BaseMail(object):
             translation.activate(cur_lang)
         return rendered.strip()
 
-    def create_email_msg(self, emails, from_email=None):
+    def create_email_msg(self, emails, attachments=None, from_email=None):
         """Create an email message instance."""
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
@@ -121,12 +121,6 @@ class BaseMail(object):
         if html_content:
             msg.attach_alternative(html_content, 'text/html')
 
-        return msg
-
-    def send(self, emails, attachments, from_email=None):
-        """Create the message and send it to emails."""
-        msg = self.create_email_msg(emails, from_email=from_email)
-
         attachments = self.get_attachments(attachments)
 
         if attachments:
@@ -137,7 +131,17 @@ class BaseMail(object):
                     else:
                         msg.attach(filename, attachment.read(), mimetype)
 
-        msg.send()
+
+        return msg
+
+    def send(self, emails, attachments=None, from_email=None):
+        """Create the message and send it to emails."""
+        msg = self.create_email_msg(emails,
+                                    attachments=attachments,
+                                    from_email=from_email) \
+                  .send()
+
+        return msg
 
     def mail_admins(self, attachments=None, from_email=None):
         """Send email to admins."""
