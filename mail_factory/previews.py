@@ -12,14 +12,6 @@ class BasePreviewMail(object):
     def mail(self):
         return self.mail_class(self.get_context_data())
 
-    @property
-    def module(self):
-        return '%s' % self.mail_class.__module__
-
-    @property
-    def name(self):
-        return '%s' % self.mail_class.__name__
-
     def get_email_receivers(self):
         return [settings.SERVER_EMAIL, ]
 
