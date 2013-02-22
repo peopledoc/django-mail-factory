@@ -52,18 +52,18 @@ Then add ``mail_factory`` to your *INSTALLED_APPS*::
 Create your first mail
 ----------------------
 
-:file:`my_app/mails.py`:
+:file:`my_app/mails/__init__.py`:
 
 .. code-block:: python
 
     from mail_factory import factory
     from mail_factory.mails import BaseMail
 
-    class WelcomeEmail(BaseMail):
+    class WelcomeMail(BaseMail):
         template_name = 'activation_email'
         params = ['user', 'site_name', 'site_url']
 
-    factory.register(WelcomeEmail)
+    factory.register(WelcomeMail)
 
 Then you must also create the templates:
 
@@ -92,6 +92,38 @@ Then you must also create the templates:
 * :file:`templates/mails/activation_email/body.html` (optional)
 
 
+Preview your first mail
+-----------------------
+
+For example if you are using the standard `django.contrib.auth` module to
+manage your users, your preview will be:
+
+* :file:`my_app/mails/previews.py`
+
+.. code-block:: python
+
+    from django.contrib.auth.models import User
+    from django.conf import settings
+
+    from my_app.mails import WelcomeMail
+
+    from mail_factory.previews import BasePreviewMail
+    from mail_factory import site
+
+    class WelcomePreviewMail(BasePreviewMail):
+        mail_class = WelcomeMail
+
+        def get_context_data(self):
+            return {
+                'user': User(username='newbie',
+                             email='newbie@localhost'),
+                'site_name': settings.SITE_NAME,
+                'site_url': settings.SITE_URL
+            }
+
+    site.register(WelcomePreviewMail)
+
+
 Send a mail
 -----------
 
@@ -112,12 +144,12 @@ Send a mail
 
 .. code-block:: python
 
-    from my_app.mails import WelcomeEmail
+    from my_app.mails import WelcomeMail
 
 
-    msg = WelcomeEmail({'user': user,
-                        'site_name': settings.SITE_NAME,
-                        'site_url': settings.SITE_URL})
+    msg = WelcomeMail({'user': user,
+                       'site_name': settings.SITE_NAME,
+                       'site_url': settings.SITE_URL})
     msg.send([user.email])
 
 
@@ -126,6 +158,10 @@ How does it work?
 
 At startup, all :file:`mails.py` files in your application folders are
 automatically discovered and the emails are registered to the factory.
+
+If you want to preview your emails you have to write
+all your previews in :file:`mails/previews.py`, previews are
+also automatically discovered.
 
 You can then directly call your emails from the factory with their
 ``template_name``.

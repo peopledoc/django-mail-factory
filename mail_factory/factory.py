@@ -45,7 +45,7 @@ class MailFactory(object):
         del self.mail_map[mail_klass.template_name]
         del self.form_map[mail_klass.template_name]
 
-    def _get_mail_object(self, template_name):
+    def _get_mail_class(self, template_name):
         """Returns the MailClass from the registration map and its
         template_name."""
         if not template_name in self.mail_map:
@@ -63,40 +63,39 @@ class MailFactory(object):
                     "%s is registered but doesn't have a form."
                     "Please restart your server" % template_name)
 
+    def get_mail_object(self, template_name, context=None):
+        MailClass = self._get_mail_class(template_name)
+        return MailClass(context)
+
     def mail(self, template_name, emails, context,
              attachments=None, from_email=None):
         """Send a mail from the template_name."""
-        MailClass = self._get_mail_object(template_name)
-        msg = MailClass(context)
-        msg.send(emails, attachments, from_email)
+        return self.get_mail_object(template_name, context)\
+                   .send(emails, attachments, from_email)
 
     def mail_admins(self, template_name, context,
                     attachments=None, from_email=None):
         """Send the mail to admins."""
-        MailClass = self._get_mail_object(template_name)
-        msg = MailClass(context)
-        msg.mail_admins(attachments, from_email)
+        self.get_mail_object(template_name, context) \
+            .mail_admins(attachments, from_email)
 
     def get_html_for(self, template_name, context):
         """Preview the body.html mail."""
-        MailClass = self._get_mail_object(template_name)
-        msg = MailClass(context)
-        return msg._render_part('body.html')
+        return self.get_mail_object(template_name, context)\
+                   ._render_part('body.html')
 
     def get_text_for(self, template_name, context):
         """Return the rendered mail text body."""
-        MailClass = self._get_mail_object(template_name)
-        msg = MailClass(context)
-        return msg._render_part('body.txt')
+        return self.get_mail_object(template_name, context)\
+                   ._render_part('body.txt')
 
     def get_subject_for(self, template_name, context):
         """Return the rendered mail subject."""
-        MailClass = self._get_mail_object(template_name)
-        msg = MailClass(context)
-        return msg._render_part('subject.txt')
+        return self.get_mail_object(template_name, context)\
+                   ._render_part('subject.txt')
 
-    def get_raw_content(self, template_name, emails, context, from_email=None):
+    def get_raw_content(self, template_name, emails, context,
+                        from_email=None):
         """Return raw mail source before sending."""
-        MailClass = self._get_mail_object(template_name)
-        msg = MailClass(context)
-        return msg.create_email_msg(emails, from_email=from_email)
+        return self.get_mail_object(template_name, context)\
+                   .create_email_msg(emails, from_email=from_email)
