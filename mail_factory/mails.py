@@ -97,7 +97,7 @@ class BaseMail(object):
         return rendered.strip()
 
     def create_email_msg(self, emails, attachments=None, from_email=None,
-                         lang=None):
+                         lang=None, message_class=EmailMultiRelated):
         """Create an email message instance."""
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
@@ -111,7 +111,7 @@ class BaseMail(object):
         except TemplateDoesNotExist:
             html_content = None
 
-        msg = EmailMultiRelated(
+        msg = message_class(
             subject, body, from_email, emails,
             headers={'Reply-To': getattr(settings,
                                          "SUPPORT_EMAIL",
