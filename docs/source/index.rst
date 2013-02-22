@@ -96,7 +96,7 @@ Preview your first mail
 -----------------------
 
 For example if you are using the standard `django.contrib.auth` module to
-manage your users, your preview will be ::
+manage your users, your preview will be:
 
 * :file:`my_app/mails/previews.py`
 
