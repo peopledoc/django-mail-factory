@@ -58,8 +58,8 @@ class BasePreviewMail(object):
     def get_email_receivers(self):
         return [settings.SERVER_EMAIL, ]
 
-    def get_context_data(**kwargs):
-        return kwargs.copy()
+    def get_context_data():
+        return {}
 
     @property
     def mail_class(self):

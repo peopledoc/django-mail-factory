@@ -32,7 +32,14 @@ TIME_ZONE = 'America/Chicago'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+
+ugettext = lambda s: s  # dummy ugettext function, as django's docs say
+
+LANGUAGES = (
+    ('en', ugettext(u'English')),
+    ('fr', ugettext(u'French')),
+)
 
 SITE_ID = 1
 

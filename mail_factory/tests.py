@@ -79,6 +79,18 @@ class MailFactoryViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'mail_factory/form.html')
 
+        self.assertIn('preview', response.context)
+        self.assertIn('preview_messages', response.context)
+
+        for language_code, language in settings.LANGUAGES:
+            self.assertIn(language_code, response.context['preview_messages'])
+
+            message = response.context['preview_messages'][language_code]
+
+            self.assertEqual(message.subject, 'My super subject')
+            self.assertEqual(message.body, 'My super content')
+            self.assertTrue(message.has_body_html())
+
     def test_mail_form_complete(self):
         self.client.login(username='newbie', password='$ecret')
 
