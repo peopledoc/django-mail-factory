@@ -95,9 +95,15 @@ Then you must also create the templates:
 Preview your first mail
 -----------------------
 
-:file:`my_app/mails/previews.py`:
+For example if you are using the standard `django.contrib.auth` module to
+manage your users, your preview will be ::
+
+* :file:`my_app/mails/previews.py`
 
 .. code-block:: python
+
+    from django.contrib.auth.models import User
+    from django.conf import settings
 
     from my_app.mails import WelcomeMail
 
