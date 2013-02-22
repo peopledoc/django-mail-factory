@@ -103,7 +103,7 @@ class BaseMail(object):
         """Create an email message instance."""
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
-        subject = self._render_part('subject.txt', lang=lang)
+        subject = self._render_part('subject.txt', lang=lang).strip()
         try:
             body = self._render_part('body.txt', lang=lang)
         except TemplateDoesNotExist:
