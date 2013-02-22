@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Django settings for demo project.
 import os
 import sys
@@ -34,11 +35,9 @@ TIME_ZONE = 'America/Chicago'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en'
 
-ugettext = lambda s: s  # dummy ugettext function, as django's docs say
-
 LANGUAGES = (
-    ('en', ugettext(u'English')),
-    ('fr', ugettext(u'French')),
+    ('en', 'English'),
+    ('fr', 'Français'),
 )
 
 SITE_ID = 1
