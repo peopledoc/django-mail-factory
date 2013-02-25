@@ -132,8 +132,8 @@ class MailFactoryTestCase(TestCase):
     def tearDown(self):
         factory.unregister(TestMail)
 
-    def test_factory_get_mail_class(self):
-        self.assertEquals(factory._get_mail_class('test'), TestMail)
+    def test_factory_get_object(self):
+        self.assertEquals(factory.get_mail_class('test'), TestMail)
 
     def test_send_mail(self):
         """Test to send one mail."""

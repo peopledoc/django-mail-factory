@@ -52,7 +52,7 @@ class BaseMail(object):
         """Return the attachments."""
         return attachments or []
 
-    def get_template_part(self, part):
+    def get_template_part(self, part, lang=None):
         """Return a mail part
 
           * subject.txt
@@ -67,7 +67,7 @@ class BaseMail(object):
         """
         templates = []
         # 1/ localized: mails/invitation_code/fr/
-        localized = join('mails', self.template_name, self.lang, part)
+        localized = join('mails', self.template_name, lang or self.lang, part)
         templates.append(localized)
 
         # 2/ fallback: mails/invitation_code/
@@ -87,7 +87,7 @@ class BaseMail(object):
           * body.html
 
         """
-        tpl = select_template(self.get_template_part(part))
+        tpl = select_template(self.get_template_part(part, lang=lang))
         cur_lang = translation.get_language()
         try:
             translation.activate(lang or self.lang)
@@ -97,7 +97,7 @@ class BaseMail(object):
         return rendered.strip()
 
     def create_email_msg(self, emails, attachments=None, from_email=None,
-                         lang=None):
+                         lang=None, message_class=EmailMultiRelated):
         """Create an email message instance."""
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
@@ -111,7 +111,7 @@ class BaseMail(object):
         except TemplateDoesNotExist:
             html_content = None
 
-        msg = EmailMultiRelated(
+        msg = message_class(
             subject, body, from_email, emails,
             headers={'Reply-To': getattr(settings,
                                          "SUPPORT_EMAIL",

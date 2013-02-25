@@ -5,8 +5,9 @@ from django.http import Http404, HttpResponse
 from django.views.generic import TemplateView, FormView
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
+from django.utils import translation
 
-from mail_factory import factory
+from . import factory, exceptions
 
 admin_required = user_passes_test(lambda x: x.is_superuser)
 
@@ -32,7 +33,10 @@ class MailFormView(FormView):
 
     def dispatch(self, request, mail_name):
         self.mail_name = mail_name
-        if self.mail_name not in factory.mail_map:
+
+        try:
+            self.mail_class = factory.get_mail_class(self.mail_name)
+        except exceptions.MailFactoryError:
             raise Http404
 
         self.raw = 'raw' in request.POST
@@ -42,7 +46,7 @@ class MailFormView(FormView):
         return super(MailFormView, self).dispatch(request)
 
     def get_form_class(self):
-        return factory._get_mail_form(self.mail_name)
+        return factory.get_mail_form(self.mail_name)
 
     def form_valid(self, form):
         if self.raw:
@@ -64,6 +68,21 @@ class MailFormView(FormView):
 
     def get_context_data(self, **kwargs):
         data = super(MailFormView, self).get_context_data(**kwargs)
+
+        data.update({
+            'mail_name': self.mail_name,
+            'lang': translation.get_language(),
+            'languages': settings.LANGUAGES,
+        })
+
+        if self.mail_class.template_name in factory.preview_map:
+            preview = factory.preview_map[self.mail_class.template_name]()
+
+            data['preview'] = preview
+            data['preview_messages'] = dict(
+                (language_code, preview.get_message(lang=language_code))
+                for language_code, language in settings.LANGUAGES)
+
         try:
             data['admin_email'] = settings.ADMINS[0][1]
         except IndexError:
@@ -74,5 +93,25 @@ class MailFormView(FormView):
         return data
 
 
+class MailPreviewMessageView(TemplateView):
+    template_name = 'mail_factory/preview_message.html'
+
+    def dispatch(self, request, mail_name, lang):
+        self.mail_name = mail_name
+        self.lang = lang
+
+        try:
+            self.preview = factory.get_mail_preview(self.mail_name)()
+        except exceptions.MailFactoryError:
+            raise Http404
+
+        return super(MailPreviewMessageView, self).dispatch(request)
+
+    def get_context_data(self, **kwargs):
+        data = super(MailPreviewMessageView, self).get_context_data(**kwargs)
+        data['preview_message'] = self.preview.get_message(lang=self.lang)
+        return data
+
 mail_list = admin_required(MailListView.as_view())
 form = admin_required(MailFormView.as_view())
+preview_message = admin_required(MailPreviewMessageView.as_view())
