@@ -178,9 +178,6 @@ This is where email previewing is useful. To preview an email, you must first
 create and register a ``PreviewMail``. Let's take the second example from this
 page, the ``SharePageMail``:
 
-
-::
-
 .. code-block:: python
 
     from django.contrib.auth.models import User
