@@ -1,6 +1,6 @@
-from base64 import b64encode
-
+# -*- coding: utf-8 -*-
 from django.conf import settings
+from django.utils.encoding import smart_str
 
 from mail_factory.messages import EmailMultiRelated
 
@@ -8,17 +8,16 @@ from mail_factory.messages import EmailMultiRelated
 class PreviewMessage(EmailMultiRelated):
     def has_body_html(self):
         """Test if a message contains an alternative rendering in text/html"""
-        return 'text/html' in self.alternatives
+        return 'text/html' in self.rendering_formats
 
     @property
     def body_html(self):
         """Return an alternative rendering in text/html"""
-        return self.alternatives.get('text/html', '')
+        return self.rendering_formats.get('text/html', '')
 
     @property
-    def body_html_escaped(self):
-        """Return an alternative rendering in text/html escaped to work in a iframe"""
-        return b64encode(self.body_html)
+    def rendering_formats(self):
+        return dict((v, k) for k, v in self.alternatives)
 
 
 class BasePreviewMail(object):
