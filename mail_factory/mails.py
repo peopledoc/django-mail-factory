@@ -50,10 +50,7 @@ class BaseMail(object):
 
     def get_attachments(self, attachments):
         """Return the attachments."""
-        if attachments:
-            return attachments
-
-        return []
+        return attachments or []
 
     def get_template_part(self, part):
         """Return a mail part
@@ -80,7 +77,7 @@ class BaseMail(object):
         # return the list of templates path candidates
         return templates
 
-    def _render_part(self, part):
+    def _render_part(self, part, lang=None):
         """Render a mail part against the mail context.
 
         Part can be:
@@ -93,23 +90,24 @@ class BaseMail(object):
         tpl = select_template(self.get_template_part(part))
         cur_lang = translation.get_language()
         try:
-            translation.activate(self.lang)
+            translation.activate(lang or self.lang)
             rendered = tpl.render(self.context)
         finally:
             translation.activate(cur_lang)
         return rendered.strip()
 
-    def create_email_msg(self, emails, from_email=None):
+    def create_email_msg(self, emails, attachments=None, from_email=None,
+                         lang=None):
         """Create an email message instance."""
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
-        subject = self._render_part('subject.txt').strip()
+        subject = self._render_part('subject.txt', lang=lang).strip()
         try:
-            body = self._render_part('body.txt')
+            body = self._render_part('body.txt', lang=lang)
         except TemplateDoesNotExist:
             body = ''
         try:
-            html_content = self._render_part('body.html')
+            html_content = self._render_part('body.html', lang=lang)
         except TemplateDoesNotExist:
             html_content = None
 
@@ -121,12 +119,6 @@ class BaseMail(object):
         if html_content:
             msg.attach_alternative(html_content, 'text/html')
 
-        return msg
-
-    def send(self, emails, attachments, from_email=None):
-        """Create the message and send it to emails."""
-        msg = self.create_email_msg(emails, from_email=from_email)
-
         attachments = self.get_attachments(attachments)
 
         if attachments:
@@ -137,7 +129,17 @@ class BaseMail(object):
                     else:
                         msg.attach(filename, attachment.read(), mimetype)
 
-        msg.send()
+
+        return msg
+
+    def send(self, emails, attachments=None, from_email=None):
+        """Create the message and send it to emails."""
+        msg = self.create_email_msg(emails,
+                                    attachments=attachments,
+                                    from_email=from_email) \
+                  .send()
+
+        return msg
 
     def mail_admins(self, attachments=None, from_email=None):
         """Send email to admins."""
