@@ -52,7 +52,7 @@ class BaseMail(object):
         """Return the attachments."""
         return attachments or []
 
-    def get_template_part(self, part):
+    def get_template_part(self, part, lang=None):
         """Return a mail part
 
           * subject.txt
@@ -67,7 +67,7 @@ class BaseMail(object):
         """
         templates = []
         # 1/ localized: mails/invitation_code/fr/
-        localized = join('mails', self.template_name, self.lang, part)
+        localized = join('mails', self.template_name, lang or self.lang, part)
         templates.append(localized)
 
         # 2/ fallback: mails/invitation_code/
@@ -87,7 +87,7 @@ class BaseMail(object):
           * body.html
 
         """
-        tpl = select_template(self.get_template_part(part))
+        tpl = select_template(self.get_template_part(part, lang=lang))
         cur_lang = translation.get_language()
         try:
             translation.activate(lang or self.lang)
