@@ -2,7 +2,8 @@
 """URLconf for mail_factory admin interface."""
 from django.conf.urls import patterns, url
 
-from mail_factory.views import mail_list, form
+from .views import mail_list, form
+
 
 urlpatterns = patterns(
     '',

@@ -6,8 +6,8 @@ from django.template import Context, TemplateDoesNotExist
 from django.template.loader import select_template
 from django.utils import translation
 
-from mail_factory import exceptions
-from mail_factory.messages import EmailMultiRelated
+from . import exceptions
+from .messages import EmailMultiRelated
 
 
 class BaseMail(object):
@@ -128,8 +128,6 @@ class BaseMail(object):
                         msg.attach_related_file(filepath, mimetype, filename)
                     else:
                         msg.attach(filename, attachment.read(), mimetype)
-
-
         return msg
 
     def send(self, emails, attachments=None, from_email=None):
