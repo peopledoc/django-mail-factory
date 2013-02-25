@@ -36,8 +36,8 @@ TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
-    ('en', 'English'),
-    ('fr', 'Français'),
+    ('en', u'English'),
+    ('fr', u'Français'),
 )
 
 SITE_ID = 1
