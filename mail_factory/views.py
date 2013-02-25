@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.utils import translation
 
-from mail_factory import factory
+from mail_factory import factory, exceptions
 
 admin_required = user_passes_test(lambda x: x.is_superuser)
 
@@ -34,10 +34,10 @@ class MailFormView(FormView):
     def dispatch(self, request, mail_name):
         self.mail_name = mail_name
 
-        if self.mail_name not in factory.mail_map:
+        try:
+            self.mail_class = factory.get_mail_class(self.mail_name)
+        except exceptions.MailFactoryError:
             raise Http404
-
-        self.mail_class = factory.mail_map[self.mail_name]
 
         self.raw = 'raw' in request.POST
         self.send = 'send' in request.POST
@@ -46,7 +46,7 @@ class MailFormView(FormView):
         return super(MailFormView, self).dispatch(request)
 
     def get_form_class(self):
-        return factory._get_mail_form(self.mail_name)
+        return factory.get_mail_form(self.mail_name)
 
     def form_valid(self, form):
         if self.raw:
@@ -94,5 +94,25 @@ class MailFormView(FormView):
         return data
 
 
+class MailPreviewMessageView(TemplateView):
+    template_name = 'mail_factory/preview_message.html'
+
+    def dispatch(self, request, mail_name, lang):
+        self.mail_name = mail_name
+        self.lang = lang
+
+        try:
+            self.preview = factory.get_mail_preview(self.mail_name)()
+        except exceptions.MailFactoryError:
+            raise Http404
+
+        return super(MailPreviewMessageView, self).dispatch(request)
+
+    def get_context_data(self, **kwargs):
+        return dict(super(MailPreviewMessageView, self).get_context_data(**kwargs), **{
+            'preview_message': self.preview.get_message(lang=self.lang)
+        })
+
 mail_list = admin_required(MailListView.as_view())
 form = admin_required(MailFormView.as_view())
+preview_message = admin_required(MailPreviewMessageView.as_view())
