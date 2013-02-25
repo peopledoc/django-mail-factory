@@ -82,9 +82,10 @@
                                 </h3>
 
                                 <ul class="choices">
-                                    <li><a href="#" class="focus content-switcher" data-target="body-text-{{ language_code }}">txt</a></li>
+                                    <li><a href="#" class="focus content-switcher" data-target="#body-text-{{ language_code }}">txt</a></li>
+
                                     {% if message.body_html %}
-                                        <li><a href="#" class="focus content-switcher" data-target="body-html-{{ language_code }}">html</a></li>
+                                        <li><a href="#" class="focus content-switcher" data-target="#body-html-{{ language_code }}">html</a></li>
                                     {% endif %}
                                 </ul>
 
@@ -94,9 +95,9 @@
                                     {{ message.body|linebreaks }}
                                 </div>
 
-                                {% if message.body_html %}
-                                    <div id="body-html-{{ language_code }}">
-                                        <iframe src="data:text/html;base64,{{ message.body_html_escaped }}" frameborder="0" allowtransparency="true"></iframe>
+                                {% if message.has_body_html %}
+                                    <div id="body-html-{{ language_code }}" style="display: none;">
+                                        <iframe src="{% url "mail_factory_preview_message" mail_name language_code %}" frameborder="0" allowtransparency="true"></iframe>
                                     </div>
                                 {% endif %}
                             </div>
