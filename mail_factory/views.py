@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from django.utils import translation
 
-from mail_factory import factory, exceptions
+from . import factory, exceptions
 
 admin_required = user_passes_test(lambda x: x.is_superuser)
 
@@ -69,7 +69,6 @@ class MailFormView(FormView):
     def get_context_data(self, **kwargs):
         data = super(MailFormView, self).get_context_data(**kwargs)
 
-
         data.update({
             'mail_name': self.mail_name,
             'lang': translation.get_language(),
@@ -80,9 +79,9 @@ class MailFormView(FormView):
             preview = factory.preview_map[self.mail_class.template_name]()
 
             data['preview'] = preview
-            data['preview_messages'] = dict((language_code,
-                                             preview.get_message(lang=language_code)) 
-                                            for language_code, language in settings.LANGUAGES)
+            data['preview_messages'] = dict(
+                (language_code, preview.get_message(lang=language_code))
+                for language_code, language in settings.LANGUAGES)
 
         try:
             data['admin_email'] = settings.ADMINS[0][1]
@@ -109,9 +108,9 @@ class MailPreviewMessageView(TemplateView):
         return super(MailPreviewMessageView, self).dispatch(request)
 
     def get_context_data(self, **kwargs):
-        return dict(super(MailPreviewMessageView, self).get_context_data(**kwargs), **{
-            'preview_message': self.preview.get_message(lang=self.lang)
-        })
+        data = super(MailPreviewMessageView, self).get_context_data(**kwargs)
+        data['preview_message'] = self.preview.get_message(lang=self.lang)
+        return data
 
 mail_list = admin_required(MailListView.as_view())
 form = admin_required(MailFormView.as_view())

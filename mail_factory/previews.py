@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 
-from mail_factory.messages import EmailMultiRelated
+from .messages import EmailMultiRelated
 
 
 class PreviewMessage(EmailMultiRelated):
     def has_body_html(self):
-        """Test if a message contains an alternative rendering in text/html"""
+        """Test if a message contains an alternative rendering in text/html."""
         return 'text/html' in self.rendering_formats
 
     @property
@@ -24,6 +24,7 @@ class BasePreviewMail(object):
 
     You also may overwrite:
      * get_context_data: to add global context such as SITE_NAME
+
     """
     message_class = PreviewMessage
 
@@ -39,7 +40,7 @@ class BasePreviewMail(object):
 
     def get_email_receivers(self):
         """Returns email receivers."""
-        return [settings.SERVER_EMAIL, ]
+        return [settings.SERVER_EMAIL]
 
     def get_context_data():
         """Returns automatic context_data."""
