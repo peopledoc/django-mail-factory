@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from django.utils.encoding import smart_str
 
 from mail_factory.messages import EmailMultiRelated
 
