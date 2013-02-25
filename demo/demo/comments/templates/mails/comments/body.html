@@ -1,10 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>{{ subject }}</title>
-    </head>
-    <body>
-        {{ content }}
-    </body>
-</html>
+{% extends "mails/comments/base.html" %}
+
+{% block content %}content in HTML english: {{ content }}{% endblock %}
+
+{% block title %}title in HTML english: {{ title }}{% endblock %}

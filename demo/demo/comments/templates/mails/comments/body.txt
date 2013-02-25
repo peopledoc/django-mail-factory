@@ -1,1 +1,1 @@
-{{ content }}
+Content in english: {{ content }}
