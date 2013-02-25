@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 
+
 try:
     # Try to import floppyforms
     import floppyforms as forms

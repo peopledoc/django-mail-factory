@@ -8,10 +8,10 @@ from django import forms
 from django.contrib.auth.models import User
 from django.test import Client
 
-from mail_factory import factory
-from mail_factory.exceptions import MailFactoryError
-from mail_factory.mails import BaseMail
-from mail_factory.forms import mailform_factory, MailForm
+from . import factory
+from .exceptions import MailFactoryError
+from .forms import mailform_factory, MailForm
+from .mails import BaseMail
 
 
 class TestMail(BaseMail):
@@ -132,21 +132,19 @@ class MailFactoryTestCase(TestCase):
     def tearDown(self):
         factory.unregister(TestMail)
 
-    def test_factory_get_object(self):
+    def test_factory_get_mail_class(self):
         self.assertEquals(factory._get_mail_class('test'), TestMail)
 
     def test_send_mail(self):
         """Test to send one mail."""
-        # Test
         factory.mail('test', ['test@mail.com'], {'title': 'Et hop'})
         self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
         self.assertEqual(['test@mail.com'], message.to)
         self.assertEqual(settings.DEFAULT_FROM_EMAIL, message.from_email)
 
-    def test_send_mail_admin(self):
-        """Test to send one mail."""
-        # Test
+    def test_mail_admin(self):
+        """Test mail admin."""
         if not settings.ADMINS:
             settings.ADMINS = (('Novapost', 'test@novapost.fr'), )
         factory.mail_admins('test', {'title': 'Et hop'})
