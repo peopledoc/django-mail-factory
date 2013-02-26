@@ -1,9 +1,14 @@
 Changelog
 =========
 
-0.3 (unreleased)
+0.3 (2013-02-26)
 ----------------
 
+ - Added email previewing (with fake data): https://django-mail-factory.readthedocs.org/en/latest/interface.html#previewing-your-email
+ - Added ``factory.get_mail_object``
+ - Renamed ``factory.get_mail_object`` to ``get_mail_class``
+ - Added ``get_text_for`` and ``get_subject_for`` to the factory
+ - Some refactoring
 
 0.2 (2013-02-19)
 ----------------
