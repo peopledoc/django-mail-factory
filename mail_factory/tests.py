@@ -150,7 +150,7 @@ class MailFactoryTestCase(TestCase):
         factory.mail_admins('test', {'title': 'Et hop'})
         self.assertEquals(len(mail.outbox), 1)
         message = mail.outbox[0]
-        self.assertEqual(list(settings.ADMINS), message.to)
+        self.assertEqual([a[1] for a in settings.ADMINS], message.to)
         self.assertEqual(settings.DEFAULT_FROM_EMAIL, message.from_email)
 
     def test_html_for(self):

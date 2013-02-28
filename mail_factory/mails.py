@@ -141,4 +141,4 @@ class BaseMail(object):
 
     def mail_admins(self, attachments=None, from_email=None):
         """Send email to admins."""
-        self.send(settings.ADMINS, attachments, from_email)
+        self.send([a[1] for a in settings.ADMINS], attachments, from_email)
