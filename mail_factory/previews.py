@@ -42,7 +42,7 @@ class BasePreviewMail(object):
         """Returns email receivers."""
         return [settings.SERVER_EMAIL]
 
-    def get_context_data():
+    def get_context_data(self):
         """Returns automatic context_data."""
         return {}
 
