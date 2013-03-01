@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # Django settings for demo project.
+from __future__ import unicode_literals
+
 import os
 import sys
 
@@ -36,8 +38,8 @@ TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
-    ('en', u'English'),
-    ('fr', u'Français'),
+    ('en', 'English'),
+    ('fr', 'Français'),
 )
 
 SITE_ID = 1

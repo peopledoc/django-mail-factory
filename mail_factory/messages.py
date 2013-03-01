@@ -2,7 +2,10 @@
 from os.path import basename
 import re
 
-from email.MIMEBase import MIMEBase
+try:
+    from email.MIMEBase import MIMEBase  # python2
+except ImportError:
+    from email.mime.base import MIMEBase  # python3
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives, SafeMIMEMultipart

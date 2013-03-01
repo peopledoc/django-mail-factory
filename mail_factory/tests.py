@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.core import mail
 from django.test import TestCase
@@ -133,7 +135,7 @@ class MailFactoryTestCase(TestCase):
         factory.unregister(TestMail)
 
     def test_factory_get_object(self):
-        self.assertEquals(factory.get_mail_class('test'), TestMail)
+        self.assertEqual(factory.get_mail_class('test'), TestMail)
 
     def test_send_mail(self):
         """Test to send one mail."""
@@ -148,7 +150,7 @@ class MailFactoryTestCase(TestCase):
         if not settings.ADMINS:
             settings.ADMINS = (('Novapost', 'test@novapost.fr'), )
         factory.mail_admins('test', {'title': 'Et hop'})
-        self.assertEquals(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
         self.assertEqual([a[1] for a in settings.ADMINS], message.to)
         self.assertEqual(settings.DEFAULT_FROM_EMAIL, message.from_email)
@@ -194,5 +196,5 @@ class MailFactoryLanguageTestCase(TestCase):
         translation.activate('fr')
         message = factory.get_raw_content('test', ['test@mail.com'],
                                           {'title': 'Et hop'})
-        self.assertIn(u'Français', u'%s' % message.body)
+        self.assertIn('Français', '%s' % message.body)
         translation.activate('en')
