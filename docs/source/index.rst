@@ -14,8 +14,9 @@ Features
 
 Django Mail Factory has support for:
 
- * Multilingual support
- * Administration to preview emails
+ * Multilingual
+ * Administration to preview emails (with fake data)
+ * Administration to render emails (with real data)
  * Multi-alternatives emails: text and html
  * Attachments
  * HTML inline display of attached images
@@ -32,13 +33,13 @@ Documentation: http://django-mail-factory.rtfd.org/
 Get started
 -----------
 
+From PyPI::
+
+    pip install django-mail-factory
+
 From the github tree::
 
     pip install -e http://github.com/novagile/django-mail-factory/
-
-or from PyPI once it's available::
-
-    pip install django-mail-factory
 
 Then add ``mail_factory`` to your *INSTALLED_APPS*::
 

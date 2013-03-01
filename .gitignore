@@ -1,5 +1,6 @@
 # Local binaries (they are generated).
 /bin/
+/include/
 
 # Local configuration (generated from templates)...
 /etc/
@@ -28,3 +29,6 @@
 # Buildout files.
 .mr.developer.cfg
 .coverage
+
+# tox environments
+.tox/

@@ -1,6 +1,16 @@
-flake8:
-	flake8 mail_factory
+.PHONY: docs test clean
 
-test:
-	coverage run --branch --source=mail_factory demo/manage.py test mail_factory
-	coverage report --omit=mail_factory/test*
+bin/python:
+	virtualenv .
+	bin/python setup.py develop
+
+test: bin/python
+	bin/pip install tox
+	bin/tox
+
+docs:
+	bin/pip install sphinx
+	SPHINXBUILD=../bin/sphinx-build $(MAKE) -C docs html $^
+
+clean:
+	rm -rf bin .tox include/ lib/ man/ django_mail_factory.egg-info/ build/
