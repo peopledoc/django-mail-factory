@@ -4,12 +4,9 @@ Django Mail Factory
 
 .. image:: https://secure.travis-ci.org/novagile/django-mail-factory.png?branch=master
    :alt: Build Status
-   :target: https://secure.travis-ci.org/novagile/django-mail-factory
+   :target: https://travis-ci.org/novagile/django-mail-factory
 
 Django Mail Factory lets you manage your email in a multilingual project.
-
-This is a project initiated at `Novapost <>`_ and contributed to by `several
-others <>`_.
 
 * Authors: Rémy Hubscher and `contributors
   <https://github.com/novagile/django-mail-factory/graphs/contributors>`_
