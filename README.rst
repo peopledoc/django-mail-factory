@@ -32,3 +32,14 @@ on all the supported python and Django versions:
 ::
 
     make test
+
+If you want to give a look at the demo (also used for the tests):
+
+::
+
+    bin/python demo/manage.py syncdb  # create an administrator
+    bin/python demo/manage.py runserver
+
+You then need to login on http://localhost:8000/admin, and the email
+administration (preview or render) is available at
+http://localhost:8000/mail_factory/.
