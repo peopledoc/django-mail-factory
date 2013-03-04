@@ -83,13 +83,6 @@ class MailFormView(FormView):
                 (language_code, preview.get_message(lang=language_code))
                 for language_code, language in settings.LANGUAGES)
 
-        try:
-            data['admin_email'] = settings.ADMINS[0][1]
-        except IndexError:
-            data['admin_email'] = getattr(
-                settings, 'SUPPORT_EMAIL',
-                getattr(settings, 'DEFAULT_FROM_EMAIL', ''))
-
         return data
 
 

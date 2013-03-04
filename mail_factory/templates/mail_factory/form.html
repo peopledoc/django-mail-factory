@@ -116,7 +116,7 @@
                     {{ form.as_p }}
                     <input type="submit" value="Get HTML mail content" />
                     <input type="submit" name="raw" value="Get raw mail" /><br/>
-                    <input type="text" name="email" value="{{ admin_email }}" />
+                    <input type="text" name="email" value="" placeholder="{% trans "Email to send to" %}" />
                     <input type="submit" name="send" value="Send to mail" />
                 </form>
             </div>
