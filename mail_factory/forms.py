@@ -23,7 +23,6 @@ class MailForm(forms.Form):
 
         if hasattr(self, 'Meta') and hasattr(self.Meta, 'initial'):
             kwargs['initial'] = self.Meta.initial
-        print(kwargs)
 
         if 'mail_class' in kwargs:
             self.mail_class = kwargs.pop('mail_class')
