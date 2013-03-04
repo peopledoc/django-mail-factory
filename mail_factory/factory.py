@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from . import exceptions
 from .forms import mailform_factory, MailForm
+from .previews import MailPreview
 
 
 class MailFactory(object):
     mail_form = MailForm
+    mail_preview = MailPreview
     mail_map = {}
     form_map = {}
     preview_map = {}
@@ -30,8 +32,8 @@ class MailFactory(object):
             form = mailform_factory(mail_klass, self.mail_form)
             self.form_map[mail_klass.template_name] = form
 
-        if mail_preview:
-            self.preview_map[mail_klass.template_name] = mail_preview
+        mail_preview = mail_preview or self.mail_preview
+        self.preview_map[mail_klass.template_name] = mail_preview
 
     def unregister(self, mail_klass):
         """Unregister a Mail class from the factory map."""

@@ -75,7 +75,7 @@ class MailFactoryViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
         response = self.client.get(reverse('mail_factory_form', kwargs={
-            'mail_name': 'comments'
+            'mail_name': 'no_custom'
         }))
 
         self.assertEqual(response.status_code, 200)
@@ -85,7 +85,7 @@ class MailFactoryViewsTestCase(TestCase):
         self.client.login(username='newbie', password='$ecret')
 
         response = self.client.post(reverse('mail_factory_form', kwargs={
-            'mail_name': 'comments',
+            'mail_name': 'no_custom',
         }), data={
             'email': 'newbie@localhost',
             'send': 1,
@@ -99,11 +99,11 @@ class MailFactoryViewsTestCase(TestCase):
 
         out = mail.outbox[0]
 
-        self.assertEqual(out.subject, 'Subject')
+        self.assertEqual(out.subject, 'Title in english: Subject')
         self.assertEqual(out.to, ['newbie@localhost'])
 
         response = self.client.post(reverse('mail_factory_form', kwargs={
-            'mail_name': 'comments',
+            'mail_name': 'no_custom',
         }), data={
             'email': 'newbie@localhost',
             'raw': 1,

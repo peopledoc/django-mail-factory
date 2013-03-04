@@ -63,9 +63,9 @@
             <h2>View mail</h2>
             <div class="language-choices">
                 <ul class="choices">
-                {% for language_code, language in languages %}
+                {% for lang_code, lang_name in languages %}
                     <li>
-                        <a href="#" data-lang="{{ language_code }}" class="content-switcher{% if lang == language_code %} focus{% endif %}" data-target="#email-{{ language_code }}">{{ language }}</a>
+                        <a href="#" data-lang="{{ lang_code }}" class="content-switcher{% if LANGUAGE_CODE == lang_code %} focus{% endif %}" data-target="#email-{{ lang_code }}">{{ lang_name }}</a>
                     </li>
                 {% endfor %}
                 </ul>
@@ -74,32 +74,17 @@
 
             <div class="content-choices">
                 <ul class="choices">
-                    {% for language_code, message in preview_messages.items %}
-                        <li{% if lang != language_code %} style="display: none;"{% endif %} id="email-{{ language_code }}">
+                    {% for lang_code, message in preview_messages.items %}
+                        <li{% if LANGUAGE_CODE != lang_code %} style="display: none;"{% endif %} id="email-{{ lang_code }}">
                             <div class="email-message">
+                                <a href="{% url "mail_factory_preview_message" mail_name lang_code %}">{% trans  "View html alternative" %}</a>
                                 <h3>
                                     {{ message.subject }}
                                 </h3>
 
-                                <ul class="choices">
-                                    <li><a href="#" class="focus content-switcher" data-target="#body-text-{{ language_code }}">txt</a></li>
-
-                                    {% if message.body_html %}
-                                        <li><a href="#" class="focus content-switcher" data-target="#body-html-{{ language_code }}">html</a></li>
-                                    {% endif %}
-                                </ul>
-
-                                <div class="clear"></div>
-
-                                <div id="body-text-{{ language_code }}">
+                                <div id="body-text-{{ lang_code }}">
                                     {{ message.body|linebreaks }}
                                 </div>
-
-                                {% if message.has_body_html %}
-                                    <div id="body-html-{{ language_code }}" style="display: none;">
-                                        <iframe src="{% url "mail_factory_preview_message" mail_name language_code %}" frameborder="0" allowtransparency="true"></iframe>
-                                    </div>
-                                {% endif %}
                             </div>
                         </li>
                     {% endfor %}

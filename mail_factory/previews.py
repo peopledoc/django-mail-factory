@@ -1,51 +1,37 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 
-from .messages import EmailMultiRelated
 
+class MailPreview(object):
+    """Abstract class that helps creating email previews.
 
-class PreviewMessage(EmailMultiRelated):
-    def has_body_html(self):
-        """Test if a message contains an alternative rendering in text/html."""
-        return 'text/html' in self.rendering_formats
-
-    @property
-    def body_html(self):
-        """Return an alternative rendering in text/html"""
-        return self.rendering_formats.get('text/html', '')
-
-    @property
-    def rendering_formats(self):
-        return dict((v, k) for k, v in self.alternatives)
-
-
-class BasePreviewMail(object):
-    """Abstract class that helps creating preview emails.
-
-    You also may overwrite:
-     * get_context_data: to add global context such as SITE_NAME
+    To provide custom preview data, override ``get_context_data`` or
+    ``get_value_for_param``.
 
     """
-    message_class = PreviewMessage
 
-    def get_message(self, lang=None):
-        """Return a new message instance based on your MailClass"""
-        return self.mail.create_email_msg(self.get_email_receivers(),
-                                          lang=lang,
-                                          message_class=self.message_class)
+    def __init__(self, mail_class):
+        self.mail_class = mail_class
 
-    @property
-    def mail(self):
-        return self.mail_class(self.get_context_data())
+    def get_preview(self, lang=None):
+        """Return a new message instance with preview data."""
+        mail = self.mail_class(self.get_context_data())
+        return mail.create_email_msg([settings.SERVER_EMAIL], lang=lang)
 
-    def get_email_receivers(self):
-        """Returns email receivers."""
-        return [settings.SERVER_EMAIL]
+    def get_html_preview(self, lang=None):
+        """Return the html alternative of a message with preview data."""
+        message = self.get_preview(lang=lang)
+        alternatives = dict((v, k) for k, v in message.alternatives)
+        if 'text/html' in alternatives:
+            return alternatives['text/html']
 
     def get_context_data(self):
-        """Returns automatic context_data."""
-        return {}
+        """Return preview data."""
+        data = {}
+        for param in self.mail_class.params:
+            data[param] = self.get_value_for_param(param)
+        return data
 
-    @property
-    def mail_class(self):
-        raise NotImplementedError
+    def get_value_for_param(self, param):
+        """Return a value for a given param."""
+        return "###"
