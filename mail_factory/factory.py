@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from . import exceptions
-from .forms import mailform_factory, MailForm
+from .forms import MailForm
 from .previews import MailPreview
 
 
@@ -26,11 +26,8 @@ class MailFactory(object):
 
         self.mail_map[mail_klass.template_name] = mail_klass
 
-        if mail_form:
-            self.form_map[mail_klass.template_name] = mail_form
-        else:
-            form = mailform_factory(mail_klass, self.mail_form)
-            self.form_map[mail_klass.template_name] = form
+        mail_form = mail_form or self.mail_form
+        self.form_map[mail_klass.template_name] = mail_form
 
         mail_preview = mail_preview or self.mail_preview
         self.preview_map[mail_klass.template_name] = mail_preview

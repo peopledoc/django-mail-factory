@@ -12,7 +12,7 @@ from django.test import Client
 
 from . import factory
 from .exceptions import MailFactoryError
-from .forms import mailform_factory, MailForm
+from .forms import MailForm
 from .mails import BaseMail
 
 
@@ -22,15 +22,8 @@ class TestMail(BaseMail):
 
 
 class MailFactoryFormTestCase(TestCase):
-    def test_mailform_factory(self):
-        mailform_class = mailform_factory(TestMail)
 
-        mailform = mailform_class()
-
-        self.assertEqual(mailform.fields.keyOrder, TestMail.params)
-        self.assertEqual(mailform.mail, TestMail)
-
-    def test_mailform_factory_with_existing_meta(self):
+    def test_mailform_with_existing_meta(self):
         class CommentMail(BaseMail):
             template_name = 'comment'
             params = ['content']
@@ -44,13 +37,11 @@ class MailFactoryFormTestCase(TestCase):
                     'content': 'My content'
                 }
 
-                mail_class = CommentMail
-
         mailform_class = CommentForm
-        mailform = mailform_class()
+        mailform = mailform_class(mail_class=CommentMail)
 
         self.assertEqual(mailform.fields.keyOrder, ['content', 'title'])
-        self.assertEqual(mailform.mail, CommentMail)
+        self.assertEqual(mailform.mail_class, CommentMail)
         self.assertIn('content', mailform.fields)
 
 

@@ -44,6 +44,11 @@ class MailFormView(FormView):
 
         return super(MailFormView, self).dispatch(request)
 
+    def get_form_kwargs(self):
+        kwargs = super(MailFormView, self).get_form_kwargs()
+        kwargs['mail_class'] = factory.get_mail_class(self.mail_name)
+        return kwargs
+
     def get_form_class(self):
         return factory.get_mail_form(self.mail_name)
 
