@@ -21,8 +21,9 @@ class MailForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.mail_class = None
 
-        if hasattr(self, '_meta') and hasattr(self._meta, 'initial'):
-            kwargs['initial'] = self._meta.initial
+        if hasattr(self, 'Meta') and hasattr(self.Meta, 'initial'):
+            kwargs['initial'] = self.Meta.initial
+        print(kwargs)
 
         if 'mail_class' in kwargs:
             self.mail_class = kwargs.pop('mail_class')
