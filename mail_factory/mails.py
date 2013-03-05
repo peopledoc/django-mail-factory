@@ -132,12 +132,9 @@ class BaseMail(object):
 
     def send(self, emails, attachments=None, from_email=None):
         """Create the message and send it to emails."""
-        msg = self.create_email_msg(emails,
-                                    attachments=attachments,
-                                    from_email=from_email) \
-                  .send()
-
-        return msg
+        message = self.create_email_msg(emails, attachments=attachments,
+                                        from_email=from_email)
+        message.send()
 
     def mail_admins(self, attachments=None, from_email=None):
         """Send email to admins."""

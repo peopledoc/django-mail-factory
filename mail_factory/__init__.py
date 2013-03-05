@@ -10,6 +10,5 @@ __version__ = distribution.version
 from mail_factory.factory import MailFactory
 from mail_factory.forms import MailForm  # NOQA
 from mail_factory.mails import BaseMail  # NOQA
-from mail_factory.previews import MailPreview  # NOQA
 
 factory = MailFactory()

@@ -27,7 +27,25 @@ class MailListView(TemplateView):
         return data
 
 
-class MailFormView(FormView):
+class MailPreviewMixin(object):
+
+    def get_mail_preview(self, template_name, lang):
+        """Return a preview from a mail's form's initial data."""
+        mail_class = factory.get_mail_class(self.mail_name)
+        form_class = factory.get_mail_form(self.mail_name)
+        form = form_class(mail_class=mail_class)
+
+        # compute context from form's get_value_for_param
+        context = {}
+        for param in mail_class.params:
+            context[param] = form.get_value_for_param(param)
+
+        # render the mail given this context and language
+        mail = mail_class(context)
+        return mail.create_email_msg([settings.ADMINS], lang=lang)
+
+
+class MailFormView(MailPreviewMixin, FormView):
     template_name = 'mail_factory/form.html'
 
     def dispatch(self, request, mail_name):
@@ -72,25 +90,18 @@ class MailFormView(FormView):
 
     def get_context_data(self, **kwargs):
         data = super(MailFormView, self).get_context_data(**kwargs)
+        data['mail_name'] = self.mail_name
 
-        data.update({
-            'mail_name': self.mail_name,
-            'languages': settings.LANGUAGES,
-        })
-
-        if self.mail_class.template_name in factory.preview_map:
-            preview_class = factory.preview_map[self.mail_class.template_name]
-            preview = preview_class(self.mail_class)
-
-            data['preview'] = preview
-            data['preview_messages'] = dict(
-                (language_code, preview.get_preview(lang=language_code))
-                for language_code, language in settings.LANGUAGES)
+        preview_messages = {}
+        for lang_code, lang_name in settings.LANGUAGES:
+            message = self.get_mail_preview(self.mail_name, lang_code)
+            preview_messages[lang_code] = message
+        data['preview_messages'] = preview_messages
 
         return data
 
 
-class MailPreviewMessageView(TemplateView):
+class MailPreviewMessageView(MailPreviewMixin, TemplateView):
     template_name = 'mail_factory/preview_message.html'
 
     def dispatch(self, request, mail_name, lang):
@@ -107,7 +118,10 @@ class MailPreviewMessageView(TemplateView):
 
     def get_context_data(self, **kwargs):
         data = super(MailPreviewMessageView, self).get_context_data(**kwargs)
-        data['html_preview'] = self.preview.get_html_preview(lang=self.lang)
+        message = self.get_mail_preview(self.mail_name, self.lang)
+        alternatives = dict((v, k) for k, v in message.alternatives)
+        if 'text/html' in alternatives:
+            data['html_preview'] = alternatives['text/html']
         return data
 
 mail_list = admin_required(MailListView.as_view())

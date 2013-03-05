@@ -58,14 +58,13 @@
 
 {% block content %}
     <div id="content-main">
-        {% if preview %}
         <div class="content">
             <h2>View mail</h2>
             <div class="language-choices">
                 <ul class="choices">
-                {% for lang_code, lang_name in languages %}
+                {% for lang_code, message in preview_messages.items %}
                     <li>
-                        <a href="#" data-lang="{{ lang_code }}" class="content-switcher{% if LANGUAGE_CODE == lang_code %} focus{% endif %}" data-target="#email-{{ lang_code }}">{{ lang_name }}</a>
+                        <a href="#" data-lang="{{ lang_code }}" class="content-switcher{% if LANGUAGE_CODE == lang_code %} focus{% endif %}" data-target="#email-{{ lang_code }}">{{ lang_code }}</a>
                     </li>
                 {% endfor %}
                 </ul>
@@ -92,7 +91,6 @@
             </div>
         </div>
         <hr />
-        {% endif %}
 
         <div class="content">
             <h2>Send mail</h2>

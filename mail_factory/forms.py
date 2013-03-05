@@ -43,3 +43,9 @@ class MailForm(forms.Form):
     def get_field_for_param(self, param):
         """By default always return a CharField for a param."""
         return forms.CharField()
+
+    def get_value_for_param(self, param):
+        """Return a value for a given param."""
+        if param in self.initial:
+            return self.initial[param]
+        return "###"

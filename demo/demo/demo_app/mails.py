@@ -1,26 +1,24 @@
-from mail_factory.mails import BaseMail
-from mail_factory import factory
-from mail_factory.previews import MailPreview
+from mail_factory import factory, BaseMail, MailForm
 
 
-class CustomPreviewMail(BaseMail):
-    template_name = 'custom_preview'
+class CustomFormMail(BaseMail):
+    template_name = 'custom_form'
     params = ['title', 'content']
 
 
-class CustomPreviewMailPreview(MailPreview):
+class CustomFormMailForm(MailForm):
 
-    def get_context_data(self, **kwargs):
-        return {
-            'title': 'My super subject',
-            'content': 'My super content'
+    class Meta:
+        initial = {
+            'title': 'My initial subject',
+            'content': 'My initial content'
         }
 
-factory.register(CustomPreviewMail, mail_preview=CustomPreviewMailPreview)
+factory.register(CustomFormMail, mail_form=CustomFormMailForm)
 
 
 class NoCustomMail(BaseMail):
     template_name = 'no_custom'
     params = ['title', 'content']
 
-factory.register(NoCustomMail)  # default form and preview
+factory.register(NoCustomMail)  # default form

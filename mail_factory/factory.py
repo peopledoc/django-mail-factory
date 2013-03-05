@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 from . import exceptions
 from .forms import MailForm
-from .previews import MailPreview
 
 
 class MailFactory(object):
     mail_form = MailForm
-    mail_preview = MailPreview
     mail_map = {}
     form_map = {}
-    preview_map = {}
 
-    def register(self, mail_klass, mail_form=None, mail_preview=None):
-        """Register a Mail class with optionnally a mail form and preview."""
+    def register(self, mail_klass, mail_form=None):
+        """Register a Mail class with an optional mail form."""
         if not hasattr(mail_klass, 'template_name'):
             raise exceptions.MailFactoryError(
                 "%s needs a template_name parameter to be registered" % (
@@ -28,9 +25,6 @@ class MailFactory(object):
 
         mail_form = mail_form or self.mail_form
         self.form_map[mail_klass.template_name] = mail_form
-
-        mail_preview = mail_preview or self.mail_preview
-        self.preview_map[mail_klass.template_name] = mail_preview
 
     def unregister(self, mail_klass):
         """Unregister a Mail class from the factory map."""
@@ -50,11 +44,8 @@ class MailFactory(object):
         del self.mail_map[key]
         del self.form_map[key]
 
-        if key in self.preview_map:
-            del self.preview_map[key]  # TODO: remove 'if' when using factory
-
     def get_mail_class(self, template_name):
-        """Return the registered MailClass for this template name."""
+        """Return the registered mail class for this template name."""
         if not template_name in self.mail_map:
             raise exceptions.MailFactoryError(
                 '%s is not registered' % template_name)
@@ -62,10 +53,9 @@ class MailFactory(object):
         return self.mail_map[template_name]
 
     def get_mail_object(self, template_name, context=None):
-        """Return the registered MailClass instance for this template name."""
-        MailClass = self.get_mail_class(template_name)
-
-        return MailClass(context)
+        """Return the registered mail class instance for this template name."""
+        mail_class = self.get_mail_class(template_name)
+        return mail_class(context)
 
     def get_mail_form(self, template_name):
         """Return the registered MailForm for this template name."""
@@ -73,13 +63,6 @@ class MailFactory(object):
             raise exceptions.MailFactoryError(
                 'No form registered for %s' % template_name)
         return self.form_map[template_name]
-
-    def get_mail_preview(self, template_name):
-        """Return the registered MailPreview for this template name."""
-        if not template_name in self.preview_map:
-            raise exceptions.MailFactoryError(
-                'No preview registered for %s' % template_name)
-        return self.preview_map[template_name]
 
     def mail(self, template_name, emails, context, attachments=None,
              from_email=None):
