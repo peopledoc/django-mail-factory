@@ -28,16 +28,9 @@ class MailFactory(object):
 
     def unregister(self, mail_klass):
         """Unregister a Mail class from the factory map."""
-        if not mail_klass.template_name in self.mail_map:
+        if not mail_klass in self.mail_map.values():
             raise exceptions.MailFactoryError(
                 '%s is not registered' % mail_klass.template_name)
-
-        if self.mail_map[mail_klass.template_name] != mail_klass:
-            raise exceptions.MailFactoryError(
-                '%s is registered for %s not for %s' % (
-                    mail_klass.template_name,
-                    self.mail_map[mail_klass.template_name].__name__,
-                    mail_klass.__name__))
 
         key = mail_klass.template_name
 

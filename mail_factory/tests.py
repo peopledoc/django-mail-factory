@@ -17,11 +17,6 @@ from .forms import MailForm
 from .mails import BaseMail
 
 
-class TestMail(BaseMail):
-    template_name = 'test'
-    params = ['title']
-
-
 class MailTest(TestCase):
 
     def test_init(self):
@@ -234,7 +229,7 @@ class MailFactoryFormTest(TestCase):
             MailForm(initial={'foo': 'bar'}).get_value_for_param('foo'), "bar")
 
 
-class MailFactoryViewsTestCase(TestCase):
+class MailFactoryViewsTest(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser('newbie', None,
                                                        '$ecret')
@@ -294,46 +289,90 @@ class MailFactoryViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class MailFactoryRegistrationTestCase(TestCase):
-    def test_factory_registration(self):
-        factory.register(TestMail)
-        self.assertIn('test', factory.mail_map)
+class MailFactoryRegistrationTest(TestCase):
 
-        factory.unregister(TestMail)
-        self.assertNotIn('test', factory.mail_map)
+    def tearDown(self):
+        if 'foo' in factory.mail_map:
+            del factory.mail_map['foo']
+
+    def test_registration_without_template_name(self):
+        class TestMail(BaseMail):
+            pass
+
+        with self.assertRaises(MailFactoryError):
+            factory.register(TestMail)
+
+    def test_registration_already_registered(self):
+        class TestMail(BaseMail):
+            template_name = 'foo'
+
+        factory.register(TestMail)
+        with self.assertRaises(MailFactoryError):
+            factory.register(TestMail)
+
+    def test_registration(self):
+        class TestMail(BaseMail):
+            template_name = 'foo'
+
+        factory.register(TestMail)
+        self.assertIn('foo', factory.mail_map)
+        self.assertEqual(factory.mail_map['foo'], TestMail)
+        self.assertIn('foo', factory.form_map)
+        self.assertEqual(factory.form_map['foo'], MailForm)  # default form
+
+    def test_registration_with_custom_form(self):
+        class TestMail(BaseMail):
+            template_name = 'foo'
+
+        class TestMailForm(MailForm):
+            pass
+
+        factory.register(TestMail, TestMailForm)
+        self.assertIn('foo', factory.form_map)
+        self.assertEqual(factory.form_map['foo'], TestMailForm)  # custom form
 
     def test_factory_unregister(self):
+        class TestMail(BaseMail):
+            template_name = 'foo'
+
+        factory.register(TestMail)
+        self.assertIn('foo', factory.mail_map)
+        factory.unregister(TestMail)
+        self.assertNotIn('foo', factory.mail_map)
         with self.assertRaises(MailFactoryError):
             factory.unregister(TestMail)
 
 
-class MailFactoryTestCase(TestCase):
+class MailFactoryTest(TestCase):
     def setUp(self):
+        class TestMail(BaseMail):
+            template_name = 'test'
+            params = ['title']
+
+        self.test_mail = TestMail
         factory.register(TestMail)
 
     def tearDown(self):
-        factory.unregister(TestMail)
+        factory.unregister(self.test_mail)
 
-    def test_factory_get_object(self):
-        self.assertEqual(factory.get_mail_class('test'), TestMail)
+    def test_get_mail_class_not_registered(self):
+        with self.assertRaises(MailFactoryError):
+            factory.get_mail_class('not registered')
 
-    def test_send_mail(self):
-        """Test to send one mail."""
-        factory.mail('test', ['test@mail.com'], {'title': 'Et hop'})
-        self.assertEqual(len(mail.outbox), 1)
-        message = mail.outbox[0]
-        self.assertEqual(['test@mail.com'], message.to)
-        self.assertEqual(settings.DEFAULT_FROM_EMAIL, message.from_email)
+    def test_factory_get_mail_class(self):
+        self.assertEqual(factory.get_mail_class('test'), self.test_mail)
 
-    def test_mail_admin(self):
-        """Test mail admin."""
-        if not settings.ADMINS:
-            settings.ADMINS = (('Novapost', 'test@novapost.fr'), )
-        factory.mail_admins('test', {'title': 'Et hop'})
-        self.assertEqual(len(mail.outbox), 1)
-        message = mail.outbox[0]
-        self.assertEqual([a[1] for a in settings.ADMINS], message.to)
-        self.assertEqual(settings.DEFAULT_FROM_EMAIL, message.from_email)
+    def test_factory_get_mail_object(self):
+        self.assertTrue(
+            isinstance(factory.get_mail_object('test', {'title': 'foo'}),
+                       self.test_mail))
+
+    def test_get_mail_form_not_registered(self):
+        with self.assertRaises(MailFactoryError):
+            factory.get_mail_form('not registered')
+
+    def test_factory_get_mail_form(self):
+        self.assertEqual(factory.get_mail_form('test'), MailForm)
 
     def test_html_for(self):
         """Get the html body of the mail."""
@@ -354,17 +393,62 @@ class MailFactoryTestCase(TestCase):
         """Get the message object."""
         message = factory.get_raw_content('test', ['test@mail.com'],
                                           {'title': 'Et hop'})
-        self.assertEqual(['test@mail.com'], message.to)
-        self.assertEqual(settings.DEFAULT_FROM_EMAIL, message.from_email)
+        self.assertEqual(message.to, ['test@mail.com'])
+        self.assertEqual(message.from_email, settings.DEFAULT_FROM_EMAIL)
         self.assertIn('Et hop', str(message.message()))
 
 
-class MailFactoryLanguageTestCase(TestCase):
+class MailFactoryMailTest(TestCase):
+
     def setUp(self):
+        class MockMail(object):  # mock mail to check if its methods are called
+            mail_admins_called = False
+            send_called = False
+            template_name = 'mockmail'
+
+            def send(self, *args, **kwargs):
+                self.send_called = True
+
+            def mail_admins(self, *args, **kwargs):
+                self.mail_admins_called = True
+
+        self.mock_mail = MockMail()
+        self.mock_mail_class = MockMail
+        factory.register(MockMail)
+        self.old_get_mail_object = factory.get_mail_object
+        factory.get_mail_object = self._mock_get_mail_object
+
+    def tearDown(self):
+        factory.unregister(self.mock_mail_class)
+        self.mock_mail.send_called = False
+        self.mock_mail.mail_admins_called = False
+        factory.get_mail_object = self.old_get_mail_object
+
+    def _mock_get_mail_object(self, template_name, context):
+        return self.mock_mail
+
+    def test_mail(self):
+        self.assertFalse(self.mock_mail.send_called)
+        factory.mail('test', ['foo@example.com'], {})
+        self.assertTrue(self.mock_mail.send_called)
+
+    def test_mail_admins(self):
+        self.assertFalse(self.mock_mail.mail_admins_called)
+        factory.mail_admins('test', {})
+        self.assertTrue(self.mock_mail.mail_admins_called)
+
+
+class MailFactoryLanguageTest(TestCase):
+    def setUp(self):
+        class TestMail(BaseMail):
+            template_name = 'test'
+            params = ['title']
+
+        self.test_mail = TestMail
         factory.register(TestMail)
 
     def tearDown(self):
-        factory.unregister(TestMail)
+        factory.unregister(self.test_mail)
 
     def test_mail_en(self):
         translation.activate('en')
