@@ -22,7 +22,6 @@ class EmailMultiRelated(EmailMultiAlternatives):
     def __init__(self, subject='', body='', from_email=None, to=None, bcc=None,
                  connection=None, attachments=None, headers=None,
                  alternatives=None):
-        # self.related_ids = []
         self.related_attachments = []
         super(EmailMultiRelated, self).__init__(
             subject, body, from_email, to, bcc, connection,

@@ -170,28 +170,68 @@ class MailTest(TestCase):
         self.assertEqual(mail.outbox[-1].to, ['some_admin@example.com'])
 
 
-class MailFactoryFormTestCase(TestCase):
+class MailFactoryFormTest(TestCase):
 
-    def test_mailform_with_existing_meta(self):
+    def test_init_initial(self):
+        class TestForm(MailForm):
+            class Meta:
+                initial = {'title': 'My subject',
+                           'content': 'My content'}
+
+        # without Meta
+        self.assertEqual(MailForm().initial, {})
+        self.assertEqual(
+            MailForm(initial={'foo': 'bar'}).initial['foo'], 'bar')
+        # with Meta
+        self.assertEqual(TestForm().initial['content'], 'My content')
+        self.assertEqual(TestForm().initial['title'], 'My subject')
+        # with "initial" provided to the form constructor (takes precedence)
+        self.assertEqual(
+            TestForm(initial={'content': 'foo'}).initial['content'], 'foo')
+
+    def test_init_mail_class(self):
         class CommentMail(BaseMail):
-            template_name = 'comment'
             params = ['content']
+            template_name = 'comment'
 
         class CommentForm(MailForm):
             title = forms.CharField()
 
             class Meta:
-                initial = {
-                    'title': 'My subject',
-                    'content': 'My content'
-                }
+                initial = {'title': 'My subject', 'content': 'My content'}
 
-        mailform_class = CommentForm
-        mailform = mailform_class(mail_class=CommentMail)
+        class CommentFormWithMailClass(MailForm):
+            title = forms.CharField()
+            mail_class = CommentMail
 
-        self.assertEqual(mailform.fields.keyOrder, ['content', 'title'])
+            class Meta:
+                initial = {'title': 'My subject', 'content': 'My content'}
+
+        # without mail_class
+        mailform = CommentForm()
+        self.assertIn('title', mailform.fields)
+        self.assertNotIn('content', mailform.fields)
+        # with mail_class as constructor parameter
+        mailform = CommentForm(mail_class=CommentMail)
         self.assertEqual(mailform.mail_class, CommentMail)
+        self.assertIn('title', mailform.fields)
         self.assertIn('content', mailform.fields)
+        self.assertEqual(mailform.fields.keyOrder, ['content', 'title'])
+        # with mail_class as class attribute
+        mailform = CommentFormWithMailClass()
+        self.assertEqual(mailform.mail_class, CommentMail)
+        self.assertIn('title', mailform.fields)
+        self.assertIn('content', mailform.fields)
+        self.assertEqual(mailform.fields.keyOrder, ['content', 'title'])
+
+    def test_get_field_for_params(self):
+        field = MailForm().get_field_for_param('foo')
+        self.assertTrue(isinstance(field, forms.CharField))
+
+    def test_get_value_for_params(self):
+        self.assertEqual(MailForm().get_value_for_param('foo'), "###")
+        self.assertEqual(
+            MailForm(initial={'foo': 'bar'}).get_value_for_param('foo'), "bar")
 
 
 class MailFactoryViewsTestCase(TestCase):
