@@ -436,29 +436,3 @@ class MailFactoryMailTest(TestCase):
         self.assertFalse(self.mock_mail.mail_admins_called)
         factory.mail_admins('test', {})
         self.assertTrue(self.mock_mail.mail_admins_called)
-
-
-class MailFactoryLanguageTest(TestCase):
-    def setUp(self):
-        class TestMail(BaseMail):
-            template_name = 'test'
-            params = ['title']
-
-        self.test_mail = TestMail
-        factory.register(TestMail)
-
-    def tearDown(self):
-        factory.unregister(self.test_mail)
-
-    def test_mail_en(self):
-        translation.activate('en')
-        message = factory.get_raw_content('test', ['test@mail.com'],
-                                          {'title': 'Et hop'})
-        self.assertIn('Et hop', '%s' % message.body)
-
-    def test_mail_fr(self):
-        translation.activate('fr')
-        message = factory.get_raw_content('test', ['test@mail.com'],
-                                          {'title': 'Et hop'})
-        self.assertIn('Français', '%s' % message.body)
-        translation.activate('en')
