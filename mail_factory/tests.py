@@ -5,6 +5,8 @@ are automatically registered, and serve as fixture."""
 
 from __future__ import unicode_literals
 
+from os.path import basename
+
 from django import forms
 from django.conf import settings
 from django.contrib.staticfiles import finders
@@ -17,11 +19,11 @@ from django.test.client import RequestFactory
 from django.utils import translation
 
 from . import factory
+from . import messages
 from . import views
 from .exceptions import MailFactoryError, MissingMailContextParamException
 from .forms import MailForm
 from .mails import BaseMail
-from .views import MailListView, MailFormView, MailPreviewMessageView
 
 
 class MailTest(TestCase):
@@ -242,12 +244,12 @@ class MailFactoryViewsTest(TestCase):
         self.factory = RequestFactory()
 
     def test_mail_list_view_get_context_data(self):
-        data = MailListView().get_context_data()
+        data = views.MailListView().get_context_data()
         self.assertIn('mail_map', data)
         self.assertEqual(len(data), len(factory.mail_map))
 
     def test_get_mail_preview(self):
-        view = MailFormView()
+        view = views.MailFormView()
         view.mail_name = 'no_custom'
         view.mail_class = factory.mail_map['no_custom']
         message = view.get_mail_preview('no_custom', 'en')
@@ -260,7 +262,7 @@ class MailFactoryViewsTest(TestCase):
     def test_mail_form_view_dispatch_unknown_mail(self):
         request = self.factory.get(reverse('mail_factory_form',
                                            kwargs={'mail_name': 'unknown'}))
-        view = MailFormView()
+        view = views.MailFormView()
         with self.assertRaises(Http404):
             view.dispatch(request, 'unknown')
 
@@ -268,7 +270,7 @@ class MailFactoryViewsTest(TestCase):
         request = self.factory.post(
             reverse('mail_factory_form', kwargs={'mail_name': 'no_custom'}),
             {'raw': 'foo', 'send': 'foo', 'email': 'email'})
-        view = MailFormView()
+        view = views.MailFormView()
         view.request = request
         view.dispatch(request, 'no_custom')
         self.assertEqual(view.mail_name, 'no_custom')
@@ -280,7 +282,7 @@ class MailFactoryViewsTest(TestCase):
     def test_mail_form_view_get_form_kwargs(self):
         request = self.factory.get(reverse('mail_factory_form',
                                            kwargs={'mail_name': 'unknown'}))
-        view = MailFormView()
+        view = views.MailFormView()
         view.mail_name = 'no_custom'
         view.mail_class = factory.mail_map['no_custom']
         view.request = request
@@ -289,7 +291,7 @@ class MailFactoryViewsTest(TestCase):
                          'NoCustomMail')
 
     def test_mail_form_view_get_form_class(self):
-        view = MailFormView()
+        view = views.MailFormView()
         view.mail_name = 'no_custom'
         self.assertEqual(view.get_form_class(), MailForm)
 
@@ -297,7 +299,7 @@ class MailFactoryViewsTest(TestCase):
         class MockForm(object):
             cleaned_data = {'title': 'title', 'content': 'content'}
 
-        view = MailFormView()
+        view = views.MailFormView()
         view.mail_name = 'no_custom'
         view.raw = True
         response = view.form_valid(MockForm())
@@ -311,7 +313,7 @@ class MailFactoryViewsTest(TestCase):
 
         request = self.factory.get(reverse('mail_factory_form',
                                            kwargs={'mail_name': 'unknown'}))
-        view = MailFormView()
+        view = views.MailFormView()
         view.request = request
         view.mail_name = 'no_custom'
         view.raw = False
@@ -335,7 +337,7 @@ class MailFactoryViewsTest(TestCase):
         self.assertEqual(response['location'], reverse('mail_factory_list'))
 
     def test_mail_form_view_form_valid_html(self):
-        view = MailFormView()
+        view = views.MailFormView()
         view.mail_name = 'no_custom'
         view.raw = False
         view.send = False
@@ -348,7 +350,7 @@ class MailFactoryViewsTest(TestCase):
                             'lang': translation.get_language()}))
 
     def test_mail_form_view_get_context_data(self):
-        view = MailFormView()
+        view = views.MailFormView()
         view.mail_name = 'no_custom'
         # save the current
         old_get_mail_preview = views.MailPreviewMixin.get_mail_preview
@@ -367,7 +369,7 @@ class MailFactoryViewsTest(TestCase):
         request = self.factory.get(
             reverse('mail_factory_preview_message',
                     kwargs={'mail_name': 'unknown', 'lang': 'fr'}))
-        view = MailPreviewMessageView()
+        view = views.MailPreviewMessageView()
         with self.assertRaises(Http404):
             view.dispatch(request, 'unknown', 'fr')
 
@@ -375,7 +377,7 @@ class MailFactoryViewsTest(TestCase):
         request = self.factory.get(
             reverse('mail_factory_preview_message',
                     kwargs={'mail_name': 'no_custom', 'lang': 'fr'}))
-        view = MailPreviewMessageView()
+        view = views.MailPreviewMessageView()
         view.request = request
         view.dispatch(request, 'no_custom', 'fr')
         self.assertEqual(view.mail_name, 'no_custom')
@@ -383,7 +385,7 @@ class MailFactoryViewsTest(TestCase):
         self.assertEqual(view.mail_class, factory.mail_map['no_custom'])
 
     def test_mail_preview_message_view_get_context_data(self):
-        view = MailPreviewMessageView()
+        view = views.MailPreviewMessageView()
         view.lang = 'fr'
         # no_custom has no template for html alternative
         view.mail_name = 'no_custom'
@@ -550,3 +552,52 @@ class MailFactoryMailTest(TestCase):
         self.assertFalse(self.mock_mail.mail_admins_called)
         factory.mail_admins('test', {})
         self.assertTrue(self.mock_mail.mail_admins_called)
+
+
+class EmailMultiRelatedTest(TestCase):
+
+    def setUp(self):
+        self.message = messages.EmailMultiRelated()
+
+    def test_attach_related_mimebase(self):
+        mime_message = messages.MIMEBase(None, None)
+        # no content nor mimetype with a mime message
+        with self.assertRaises(AssertionError):
+            self.message.attach_related(filename=mime_message, content='foo')
+        with self.assertRaises(AssertionError):
+            self.message.attach_related(filename=mime_message, mimetype='bar')
+        # attach a mime message
+        self.message.attach_related(filename=mime_message)
+        self.assertEqual(self.message.related_attachments, [mime_message])
+
+    def test_attach_related_non_mimebase(self):
+        # needs a content if not a mimemessage
+        with self.assertRaises(AssertionError):
+            self.message.attach_related(filename='foo')
+        # attach a non-mime message
+        self.message.attach_related(filename='foo', content='bar',
+                                    mimetype='baz')
+        self.assertEqual(self.message.related_attachments,
+                         [('foo', 'bar', 'baz')])
+
+    def test_attach_related_file(self):
+        path = __file__  # attach this very file you're reading
+        self.message.attach_related_file(path=path, mimetype='baz')
+        filename, content, mimetype = self.message.related_attachments[0]
+        self.assertEqual(filename, basename(__file__))
+        self.assertEqual(mimetype, 'baz')
+
+    def test_create_alternatives(self):
+        self.message.alternatives = [('<img src="img.gif" />', 'text/html')]
+        self.message.related_attachments = [('img.gif', b'', 'image/gif')]
+        self.message._create_alternatives(None)
+        self.assertEqual(self.message.alternatives,
+                         [('<img src="cid:img.gif" />', 'text/html')])
+
+    def test_create_related_attachments(self):
+        self.message.related_attachments = [('img.gif', b'', 'image/gif')]
+        self.message.body = True
+        new_msg = self.message._create_related_attachments('foo message')
+        content, attachment = new_msg.get_payload()
+        self.assertEqual(content, 'foo message')
+        self.assertEqual(attachment.get_filename(), 'img.gif')
