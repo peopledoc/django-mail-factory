@@ -2,6 +2,7 @@
 from django.shortcuts import redirect
 from django.conf import settings
 from django.http import Http404, HttpResponse
+from django.utils import translation
 from django.views.generic import TemplateView, FormView
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
@@ -31,17 +32,16 @@ class MailPreviewMixin(object):
 
     def get_mail_preview(self, template_name, lang):
         """Return a preview from a mail's form's initial data."""
-        mail_class = factory.get_mail_class(self.mail_name)
         form_class = factory.get_mail_form(self.mail_name)
-        form = form_class(mail_class=mail_class)
+        form = form_class(mail_class=self.mail_class)
 
         # compute context from form's get_value_for_param
         context = {}
-        for param in mail_class.params:
+        for param in self.mail_class.params:
             context[param] = form.get_value_for_param(param)
 
         # render the mail given this context and language
-        mail = mail_class(context)
+        mail = self.mail_class(context)
         return mail.create_email_msg([settings.ADMINS], lang=lang)
 
 
@@ -64,7 +64,7 @@ class MailFormView(MailPreviewMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super(MailFormView, self).get_form_kwargs()
-        kwargs['mail_class'] = factory.get_mail_class(self.mail_name)
+        kwargs['mail_class'] = self.mail_class
         return kwargs
 
     def get_form_class(self):
@@ -85,8 +85,9 @@ class MailFormView(MailPreviewMixin, FormView):
                                                      self.email))
             return redirect('mail_factory_list')
 
-        return HttpResponse(
-            factory.get_html_for(self.mail_name, form.cleaned_data))
+        return redirect('mail_factory_preview_message',
+                        self.mail_name,
+                        translation.get_language())
 
     def get_context_data(self, **kwargs):
         data = super(MailFormView, self).get_context_data(**kwargs)
@@ -109,10 +110,9 @@ class MailPreviewMessageView(MailPreviewMixin, TemplateView):
         self.lang = lang
 
         try:
-            preview_class = factory.preview_map[self.mail_name]
+            self.mail_class = factory.get_mail_class(self.mail_name)
         except exceptions.MailFactoryError:
             raise Http404
-        self.preview = preview_class(factory.mail_map[self.mail_name])
 
         return super(MailPreviewMessageView, self).dispatch(request)
 
@@ -122,6 +122,7 @@ class MailPreviewMessageView(MailPreviewMixin, TemplateView):
         alternatives = dict((v, k) for k, v in message.alternatives)
         if 'text/html' in alternatives:
             data['html_preview'] = alternatives['text/html']
+        data['mail_name'] = self.mail_name
         return data
 
 mail_list = admin_required(MailListView.as_view())

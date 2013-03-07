@@ -1,20 +1,27 @@
 # -*- coding: utf-8 -*-
+
+"""Keep in mind throughout those tests that the mails from demo.demo_app.mails
+are automatically registered, and serve as fixture."""
+
 from __future__ import unicode_literals
 
 from django import forms
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib.staticfiles import finders
 from django.core import mail
 from django.core.urlresolvers import reverse
+from django.http import Http404, HttpResponse
 from django.template import TemplateDoesNotExist
-from django.test import TestCase, Client
+from django.test import TestCase
+from django.test.client import RequestFactory
 from django.utils import translation
 
 from . import factory
+from . import views
 from .exceptions import MailFactoryError, MissingMailContextParamException
 from .forms import MailForm
 from .mails import BaseMail
+from .views import MailListView, MailFormView, MailPreviewMessageView
 
 
 class MailTest(TestCase):
@@ -230,63 +237,170 @@ class MailFactoryFormTest(TestCase):
 
 
 class MailFactoryViewsTest(TestCase):
+
     def setUp(self):
-        self.superuser = User.objects.create_superuser('newbie', None,
-                                                       '$ecret')
-        self.client = Client()
+        self.factory = RequestFactory()
 
-    def test_mail_list_view(self):
-        self.client.login(username='newbie', password='$ecret')
-        response = self.client.get(reverse('mail_factory_list'))
+    def test_mail_list_view_get_context_data(self):
+        data = MailListView().get_context_data()
+        self.assertIn('mail_map', data)
+        self.assertEqual(len(data), len(factory.mail_map))
 
+    def test_get_mail_preview(self):
+        view = MailFormView()
+        view.mail_name = 'no_custom'
+        view.mail_class = factory.mail_map['no_custom']
+        message = view.get_mail_preview('no_custom', 'en')
+        self.assertEqual(message.subject, 'Title in english: ###')
+        self.assertEqual(message.body, 'Content in english: ###')
+        message = view.get_mail_preview('no_custom', 'fr')
+        self.assertEqual(message.subject, 'Titre en français : ###')
+        self.assertEqual(message.body, 'Contenu en français : ###')
+
+    def test_mail_form_view_dispatch_unknown_mail(self):
+        request = self.factory.get(reverse('mail_factory_form',
+                                           kwargs={'mail_name': 'unknown'}))
+        view = MailFormView()
+        with self.assertRaises(Http404):
+            view.dispatch(request, 'unknown')
+
+    def test_mail_form_view_dispatch(self):
+        request = self.factory.post(
+            reverse('mail_factory_form', kwargs={'mail_name': 'no_custom'}),
+            {'raw': 'foo', 'send': 'foo', 'email': 'email'})
+        view = MailFormView()
+        view.request = request
+        view.dispatch(request, 'no_custom')
+        self.assertEqual(view.mail_name, 'no_custom')
+        self.assertEqual(view.mail_class, factory.mail_map['no_custom'])
+        self.assertTrue(view.raw)
+        self.assertTrue(view.send)
+        self.assertEqual(view.email, 'email')
+
+    def test_mail_form_view_get_form_kwargs(self):
+        request = self.factory.get(reverse('mail_factory_form',
+                                           kwargs={'mail_name': 'unknown'}))
+        view = MailFormView()
+        view.mail_name = 'no_custom'
+        view.mail_class = factory.mail_map['no_custom']
+        view.request = request
+        self.assertIn('mail_class', view.get_form_kwargs())
+        self.assertEqual(view.get_form_kwargs()['mail_class'].__name__,
+                         'NoCustomMail')
+
+    def test_mail_form_view_get_form_class(self):
+        view = MailFormView()
+        view.mail_name = 'no_custom'
+        self.assertEqual(view.get_form_class(), MailForm)
+
+    def test_mail_form_view_form_valid_raw(self):
+        class MockForm(object):
+            cleaned_data = {'title': 'title', 'content': 'content'}
+
+        view = MailFormView()
+        view.mail_name = 'no_custom'
+        view.raw = True
+        response = view.form_valid(MockForm())
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'mail_factory/list.html')
+        self.assertTrue(isinstance(response, HttpResponse))
+        self.assertTrue(response.content.startswith(b'<pre>'))
 
-    def test_mail_form_view(self):
-        self.client.login(username='newbie', password='$ecret')
-        response = self.client.get(reverse('mail_factory_form', kwargs={
-            'mail_name': 'unknown'
-        }))
-        self.assertEqual(response.status_code, 404)
+    def test_mail_form_view_form_valid_send(self):
+        class MockForm(object):
+            cleaned_data = {'title': 'title', 'content': 'content'}
 
-        response = self.client.get(reverse('mail_factory_form', kwargs={
-            'mail_name': 'no_custom'
-        }))
+        request = self.factory.get(reverse('mail_factory_form',
+                                           kwargs={'mail_name': 'unknown'}))
+        view = MailFormView()
+        view.request = request
+        view.mail_name = 'no_custom'
+        view.raw = False
+        view.send = True
+        view.email = 'foo@example.com'
+        old_factory_mail = factory.mail  # save current mail method
+        # save current django.contrib.messages.success (imported in .views)
+        old_messages_success = views.messages.success
+        self.factory_send_called = False
 
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'mail_factory/form.html')
+        def mock_factory_mail(mail_name, to, context):
+            self.factory_send_called = True  # noqa
 
-    def test_mail_form_complete(self):
-        self.client.login(username='newbie', password='$ecret')
+        factory.mail = mock_factory_mail  # mock mail method
+        views.messages.success = lambda x, y: True  # mock messages.success
+        response = view.form_valid(MockForm())
+        factory.mail = old_factory_mail  # restore mail method
+        views.messages.success = old_messages_success  # restore messages
+        self.assertTrue(self.factory_send_called)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], reverse('mail_factory_list'))
 
-        response = self.client.post(reverse('mail_factory_form', kwargs={
-            'mail_name': 'no_custom',
-        }), data={
-            'email': 'newbie@localhost',
-            'send': 1,
-            'title': 'Subject',
-            'content': 'Content'
-        })
+    def test_mail_form_view_form_valid_html(self):
+        view = MailFormView()
+        view.mail_name = 'no_custom'
+        view.raw = False
+        view.send = False
+        response = view.form_valid(None)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response['location'],
+            reverse('mail_factory_preview_message',
+                    kwargs={'mail_name': 'no_custom',
+                            'lang': translation.get_language()}))
 
-        self.assertRedirects(response, reverse('mail_factory_list'))
+    def test_mail_form_view_get_context_data(self):
+        view = MailFormView()
+        view.mail_name = 'no_custom'
+        # save the current
+        old_get_mail_preview = views.MailPreviewMixin.get_mail_preview
+        # mock
+        views.MailPreviewMixin.get_mail_preview = lambda x, y, z: 'mocked'
+        data = view.get_context_data()
+        # restore after mock
+        views.MailPreviewMixin.get_mail_preview = old_get_mail_preview
+        self.assertIn('mail_name', data)
+        self.assertEqual(data['mail_name'], 'no_custom')
+        self.assertIn('preview_messages', data)
+        self.assertDictEqual(data['preview_messages'],
+                             {'fr': 'mocked', 'en': 'mocked'})
 
-        self.assertEqual(len(mail.outbox), 1)
+    def test_mail_preview_message_view_dispatch_unknown_mail(self):
+        request = self.factory.get(
+            reverse('mail_factory_preview_message',
+                    kwargs={'mail_name': 'unknown', 'lang': 'fr'}))
+        view = MailPreviewMessageView()
+        with self.assertRaises(Http404):
+            view.dispatch(request, 'unknown', 'fr')
 
-        out = mail.outbox[0]
+    def test_mail_preview_message_view_dispatch(self):
+        request = self.factory.get(
+            reverse('mail_factory_preview_message',
+                    kwargs={'mail_name': 'no_custom', 'lang': 'fr'}))
+        view = MailPreviewMessageView()
+        view.request = request
+        view.dispatch(request, 'no_custom', 'fr')
+        self.assertEqual(view.mail_name, 'no_custom')
+        self.assertEqual(view.lang, 'fr')
+        self.assertEqual(view.mail_class, factory.mail_map['no_custom'])
 
-        self.assertEqual(out.subject, 'Title in english: Subject')
-        self.assertEqual(out.to, ['newbie@localhost'])
-
-        response = self.client.post(reverse('mail_factory_form', kwargs={
-            'mail_name': 'no_custom',
-        }), data={
-            'email': 'newbie@localhost',
-            'raw': 1,
-            'title': 'Subject',
-            'content': 'Content'
-        })
-
-        self.assertEqual(response.status_code, 200)
+    def test_mail_preview_message_view_get_context_data(self):
+        view = MailPreviewMessageView()
+        view.lang = 'fr'
+        # no_custom has no template for html alternative
+        view.mail_name = 'no_custom'
+        view.mail_class = factory.mail_map['no_custom']
+        data = view.get_context_data()
+        self.assertIn('mail_name', data)
+        self.assertEqual(data['mail_name'], 'no_custom')
+        self.assertNotIn('html_preview', data)
+        # custom_form has templates for html alternative
+        view.mail_name = 'custom_form'
+        view.mail_class = factory.mail_map['custom_form']
+        data = view.get_context_data()
+        self.assertIn('mail_name', data)
+        self.assertEqual(data['mail_name'], 'custom_form')
+        self.assertIn('html_preview', data)
+        self.assertIn('contenu en HTML et en français : My initial content',
+                      data['html_preview'])
 
 
 class MailFactoryRegistrationTest(TestCase):
