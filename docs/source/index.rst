@@ -15,8 +15,7 @@ Features
 Django Mail Factory has support for:
 
  * Multilingual
- * Administration to preview emails (with fake data)
- * Administration to render emails (with real data)
+ * Administration to preview or render emails
  * Multi-alternatives emails: text and html
  * Attachments
  * HTML inline display of attached images

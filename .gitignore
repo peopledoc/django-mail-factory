@@ -14,6 +14,7 @@
 # Data files.
 /var/
 /docs/build/
+share/
 
 # Python files.
 *.pyc
@@ -32,3 +33,6 @@
 
 # tox environments
 .tox/
+
+# local sqlite database
+db.sqlite

@@ -83,9 +83,6 @@ Let's say we have a *share this page* email, with a custom message:
         message = forms.CharField(widget=forms.Textarea)
         date = forms.DateTimeField()
 
-        class Meta:
-            mail_class = SharePageMail
-
 
     factory.register(SharePageMail, SharePageMailForm)
 
@@ -98,16 +95,13 @@ your mail.
 
 .. code-block:: python
 
-    # -*- coding: utf-8 -*-
-    from django.conf import settings
-    from django.core.urlresolvers import reverse_lazy as reverse
-
-    from mail_factory import factory, MailForm
-    from postbox.core.mails import BaseMail
-
     import datetime
     import uuid
+
+    from django.conf import settings
+    from django.core.urlresolvers import reverse_lazy as reverse
     from django import forms
+    from mail_factory import factory, MailForm, BaseMail
 
 
     class ShareBucketMail(BaseMail):
@@ -131,7 +125,6 @@ your mail.
                        'comment': 'I shared with you documents we talked about.',
                        'expiration_date': datetime.date.today,
                        'activation_url': activation_url}
-            mail_class = ShareBucketMail
 
     factory.register(ShareBucketMail, ShareBucketForm)
 
@@ -174,32 +167,42 @@ designer, and all of those don't want to cope with the setting up of real data.
 All they want is to be able to preview the email, in the different languages
 available.
 
-This is where email previewing is useful. To preview an email, you must first
-create and register a ``PreviewMail``. Let's take the second example from this
+This is where email previewing is useful.
+
+Previewing is available straigh away thanks to sane defaults. It uses the
+data returned by ``get_context_data``, which in turn uses the form's
+Meta.initial, and in last resort, returns "###".
+
+The preview can thus use fake data: let's take the second example from this
 page, the ``SharePageMail``:
 
 .. code-block:: python
 
+    import datetime
+
     from django.contrib.auth.models import User
     from django.conf import settings
 
-    from mail_factory import factory
-    from mail_factory.previews import BasePreviewMail
+    from mail_factory import factory, MailForm
 
 
-    class SharePageMailPreview(BasePreviewMail):
-        mail_class = SharePageMail
+    class SharePageMailForm(MailForm):
+        user = forms.ModelChoiceField(queryset=User.objects.all())
+        message = forms.CharField(widget=forms.Textarea)
+        date = forms.DateTimeField()
 
-        def get_context_data(self):
-            return {
-                'user': User(username='newbie',
-                             email='newbie@localhost'),
-                'message': 'some message for previewing the mail',
-                'date': datetime.date.today(),
-            }
+        class Meta:
+            initial = {'user': User(first_name='John', last_name='Doe'),
+                       'message': 'Some message'}
 
-    factory.register(SharePageMail, SharePageMailForm, SharePageMailPreview)
+        def get_context_data(self, **kwargs):
+            data = super(SharePageMailForm, self).get_context_data(**kwargs)
+            data['date'] = datetime.date.today(),
+            return data
+
+    factory.register(SharePageMail, SharePageMailForm)
 
 With this feature, when displaying the mail form in the admin (to render the
 email with real data), the email will also be previewed (in the different
-available languages) with the fake data provided with the ``get_context_data``.
+available languages) with the fake data provided either by the form's
+``get_context_data`` or by Meta.initial.
