@@ -33,8 +33,12 @@ class MailForm(forms.Form):
         """By default always return a CharField for a param."""
         return forms.CharField()
 
-    def get_value_for_param(self, param):
-        """Return a value for a given param."""
-        if param in self.initial:
-            return self.initial[param]
-        return "###"
+    def get_context_data(self, **kwargs):
+        """Return context data used for the mail preview."""
+        data = {}
+        if self.mail_class is not None:
+            for param in self.mail_class.params:
+                data[param] = "###"  # default
+        data.update(self.initial)
+        data.update(kwargs)
+        return data

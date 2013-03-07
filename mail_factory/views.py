@@ -35,13 +35,8 @@ class MailPreviewMixin(object):
         form_class = factory.get_mail_form(self.mail_name)
         form = form_class(mail_class=self.mail_class)
 
-        # compute context from form's get_value_for_param
-        context = {}
-        for param in self.mail_class.params:
-            context[param] = form.get_value_for_param(param)
-
-        # render the mail given this context and language
-        mail = self.mail_class(context)
+        # render the mail given this language
+        mail = self.mail_class(form.get_context_data())
         return mail.create_email_msg([settings.ADMINS], lang=lang)
 
 

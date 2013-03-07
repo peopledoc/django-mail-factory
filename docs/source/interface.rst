@@ -170,14 +170,11 @@ available.
 This is where email previewing is useful.
 
 Previewing is available straigh away thanks to sane defaults. It uses the
-registered MailForm Meta initial data, when present, or anything specified in
-``get_value_for_param``.
+data returned by ``get_context_data``, which in turn uses the form's
+Meta.initial, and in last resort, returns "###".
 
-By default, if no Meta.initial is provided, ``get_value_for_param`` will return
-"###", otherwise it'll return the value provided in the form's Meta.initial.
-
-Let's take the second example from this page, the
-``SharePageMail``:
+The preview can thus use fake data: let's take the second example from this
+page, the ``SharePageMail``:
 
 .. code-block:: python
 
@@ -198,15 +195,14 @@ Let's take the second example from this page, the
             initial = {'user': User(first_name='John', last_name='Doe'),
                        'message': 'Some message'}
 
-        def get_value_for_param(self, param):
-            """Return a value for a given param."""
-            if param == 'date':
-                return datetime.date.today(),
-            return super(SharePageMailForm, self).get_value_for_param(parm)
+        def get_context_data(self, **kwargs):
+            data = super(SharePageMailForm, self).get_context_data(**kwargs)
+            data['date'] = datetime.date.today(),
+            return data
 
     factory.register(SharePageMail, SharePageMailForm)
 
 With this feature, when displaying the mail form in the admin (to render the
 email with real data), the email will also be previewed (in the different
 available languages) with the fake data provided either by the form's
-Meta.initial or by ``get_value_for_param``.
+``get_context_data`` or by Meta.initial.

@@ -71,7 +71,9 @@ class FormTest(TestCase):
         field = MailForm().get_field_for_param('foo')
         self.assertTrue(isinstance(field, forms.CharField))
 
-    def test_get_value_for_params(self):
-        self.assertEqual(MailForm().get_value_for_param('foo'), "###")
+    def test_get_context_data(self):
+        self.assertEqual(MailForm().get_context_data(), {})
         self.assertEqual(
-            MailForm(initial={'foo': 'bar'}).get_value_for_param('foo'), "bar")
+            MailForm(initial={'foo': 'bar'}).get_context_data()['foo'], "bar")
+        self.assertEqual(
+            MailForm().get_context_data(foo='bar')['foo'], "bar")
