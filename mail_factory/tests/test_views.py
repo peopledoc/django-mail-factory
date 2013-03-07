@@ -26,7 +26,24 @@ class MailListViewTest(TestCase):
 
 class MailPreviewMixinTest(TestCase):
 
-    def test_get_mail_preview(self):
+    def test_get_html_alternative(self):
+        view = views.MailFormView()
+        # no_custom has no html alternative
+        form_class = factory.get_mail_form('no_custom')
+        mail_class = factory.get_mail_class('no_custom')
+        form = form_class(mail_class=mail_class)
+        mail = mail_class(form.get_context_data())
+        message = mail.create_email_msg([])
+        self.assertFalse(view.get_html_alternative(message))
+        # custom_form has an html alternative
+        form_class = factory.get_mail_form('custom_form')
+        mail_class = factory.get_mail_class('custom_form')
+        form = form_class(mail_class=mail_class)
+        mail = mail_class(form.get_context_data())
+        message = mail.create_email_msg([])
+        self.assertTrue(view.get_html_alternative(message))
+
+    def test_get_mail_preview_language(self):
         view = views.MailFormView()
         view.mail_name = 'no_custom'
         view.mail_class = factory.mail_map['no_custom']
@@ -36,6 +53,20 @@ class MailPreviewMixinTest(TestCase):
         message = view.get_mail_preview('no_custom', 'fr')
         self.assertEqual(message.subject, 'Titre en français : ###')
         self.assertEqual(message.body, 'Contenu en français : ###')
+
+    def test_get_mail_preview_no_html(self):
+        view = views.MailFormView()
+        view.mail_name = 'no_custom'  # no template for html alternative
+        view.mail_class = factory.mail_map['no_custom']
+        message = view.get_mail_preview('no_custom', 'en')
+        self.assertFalse(message.html)
+
+    def test_get_mail_preview_html(self):
+        view = views.MailFormView()
+        view.mail_name = 'custom_form'  # has templates for html alternative
+        view.mail_class = factory.mail_map['custom_form']
+        message = view.get_mail_preview('custom_form', 'en')
+        self.assertTrue(message.html)
 
 
 class MailFormViewTest(TestCase):
@@ -177,19 +208,9 @@ class MailPreviewMessageViewTest(TestCase):
     def test_get_context_data(self):
         view = views.MailPreviewMessageView()
         view.lang = 'fr'
-        # no_custom has no template for html alternative
         view.mail_name = 'no_custom'
         view.mail_class = factory.mail_map['no_custom']
         data = view.get_context_data()
         self.assertIn('mail_name', data)
         self.assertEqual(data['mail_name'], 'no_custom')
-        self.assertNotIn('html_preview', data)
-        # custom_form has templates for html alternative
-        view.mail_name = 'custom_form'
-        view.mail_class = factory.mail_map['custom_form']
-        data = view.get_context_data()
-        self.assertIn('mail_name', data)
-        self.assertEqual(data['mail_name'], 'custom_form')
-        self.assertIn('html_preview', data)
-        self.assertIn('contenu en HTML et en français : My initial content',
-                      data['html_preview'])
+        self.assertIn('message', data)

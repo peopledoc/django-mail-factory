@@ -30,6 +30,12 @@ class MailListView(TemplateView):
 
 class MailPreviewMixin(object):
 
+    def get_html_alternative(self, message):
+        """Return the html alternative, if present."""
+        alternatives = dict((v, k) for k, v in message.alternatives)
+        if 'text/html' in alternatives:
+            return alternatives['text/html']
+
     def get_mail_preview(self, template_name, lang):
         """Return a preview from a mail's form's initial data."""
         form_class = factory.get_mail_form(self.mail_name)
@@ -37,7 +43,10 @@ class MailPreviewMixin(object):
 
         # render the mail given this language
         mail = self.mail_class(form.get_context_data())
-        return mail.create_email_msg([settings.ADMINS], lang=lang)
+        message = mail.create_email_msg([settings.ADMINS], lang=lang)
+        message.html = self.get_html_alternative(message)
+
+        return message
 
 
 class MailFormView(MailPreviewMixin, FormView):
@@ -114,10 +123,8 @@ class MailPreviewMessageView(MailPreviewMixin, TemplateView):
     def get_context_data(self, **kwargs):
         data = super(MailPreviewMessageView, self).get_context_data(**kwargs)
         message = self.get_mail_preview(self.mail_name, self.lang)
-        alternatives = dict((v, k) for k, v in message.alternatives)
-        if 'text/html' in alternatives:
-            data['html_preview'] = alternatives['text/html']
         data['mail_name'] = self.mail_name
+        data['message'] = message
         return data
 
 mail_list = admin_required(MailListView.as_view())

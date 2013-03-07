@@ -76,7 +76,9 @@
                     {% for lang_code, message in preview_messages.items %}
                         <li{% if LANGUAGE_CODE != lang_code %} style="display: none;"{% endif %} id="email-{{ lang_code }}">
                             <div class="email-message">
-                                <a href="{% url "mail_factory_preview_message" mail_name lang_code %}">{% trans  "View html alternative" %}</a>
+                                {% if message.html %}
+                                    <a href="{% url "mail_factory_preview_message" mail_name lang_code %}">{% trans  "View html alternative" %}</a>
+                                {% endif %}
                                 <h3>
                                     {{ message.subject }}
                                 </h3>
