@@ -1,8 +1,16 @@
 Changelog
 =========
 
-0.4 (unreleased)
+0.4 (2013-03-12)
 ----------------
+
+ - only display the email preview link to the html alternative if it exist
+ - full test coverage (100%)
+ - refactor/rewrite (cleanup, no more meta-programming)
+ - merged email previewing in MailForm
+ - now uses tox, added py33 to travis
+ - ported to python3
+ - fixed error with mail_admin (was "working" with django<1.5)
 
 
 0.3 (2013-02-26)
