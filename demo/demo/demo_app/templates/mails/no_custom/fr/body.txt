@@ -1,0 +1,2 @@
+Contenu en français : {{ content }}
+

@@ -102,10 +102,7 @@ class BaseMail(object):
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
         subject = self._render_part('subject.txt', lang=lang).strip()
-        try:
-            body = self._render_part('body.txt', lang=lang)
-        except TemplateDoesNotExist:
-            body = ''
+        body = self._render_part('body.txt', lang=lang)
         try:
             html_content = self._render_part('body.html', lang=lang)
         except TemplateDoesNotExist:
@@ -132,12 +129,9 @@ class BaseMail(object):
 
     def send(self, emails, attachments=None, from_email=None):
         """Create the message and send it to emails."""
-        msg = self.create_email_msg(emails,
-                                    attachments=attachments,
-                                    from_email=from_email) \
-                  .send()
-
-        return msg
+        message = self.create_email_msg(emails, attachments=attachments,
+                                        from_email=from_email)
+        message.send()
 
     def mail_admins(self, attachments=None, from_email=None):
         """Send email to admins."""

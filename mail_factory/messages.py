@@ -22,7 +22,6 @@ class EmailMultiRelated(EmailMultiAlternatives):
     def __init__(self, subject='', body='', from_email=None, to=None, bcc=None,
                  connection=None, attachments=None, headers=None,
                  alternatives=None):
-        # self.related_ids = []
         self.related_attachments = []
         super(EmailMultiRelated, self).__init__(
             subject, body, from_email, to, bcc, connection,
@@ -82,8 +81,8 @@ class EmailMultiRelated(EmailMultiAlternatives):
         object. Adjust headers to use Content-ID where applicable.
         Taken from http://code.djangoproject.com/ticket/4771
         """
-        attachment = super(EmailMultiRelated, self).\
-            _create_attachment(filename, content, mimetype)
+        attachment = super(EmailMultiRelated, self)._create_attachment(
+            filename, content, mimetype)
         if filename:
             mimetype = attachment['Content-Type']
             del(attachment['Content-Type'])
