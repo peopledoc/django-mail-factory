@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 from . import exceptions
 from .forms import MailForm
 
@@ -69,10 +70,21 @@ class MailFactory(object):
         mail = self.get_mail_object(template_name, context)
         mail.mail_admins(attachments, from_email)
 
-    def get_html_for(self, template_name, context):
+    def get_html_for(self, template_name, context, cid_to_data=False):
         """Preview the body.html mail."""
         mail = self.get_mail_object(template_name, context)
-        return mail._render_part('body.html')
+        mail_content = mail._render_part('body.html')
+        print cid_to_data
+        if cid_to_data:
+            attachments = mail.get_attachments()
+            for filepath, filename, mimetype in attachments:
+                with open(filepath, 'rb') as attachment:
+                    if mimetype.startswith('image'):
+                        data_url_encode = 'data:%s;base64,%s' % (
+                            mimetype, base64.b64encode(attachment.read()))
+                        mail_content = mail_content.replace(
+                            'cid:%s' % filename, data_url_encode)
+        return mail_content
 
     def get_text_for(self, template_name, context):
         """Return the rendered mail text body."""

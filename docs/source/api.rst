@@ -78,7 +78,7 @@ can define it here:
 
     class MyProjectBaseMail(BaseMail):
 
-        def get_attachments(self, files):
+        def get_attachments(self, files=None):
             attach = super(MyProjectBaseMail, self).get_attachments(files)
             attach.append((finders.find('mails/header.png'),
                            'header.png', 'image/png'))

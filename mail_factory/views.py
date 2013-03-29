@@ -44,7 +44,8 @@ class MailPreviewMixin(object):
         # render the mail given this language
         mail = self.mail_class(form.get_context_data())
         message = mail.create_email_msg([settings.ADMINS], lang=lang)
-        message.html = self.get_html_alternative(message)
+        message.html = self.get_html_alternative(message,
+                                 cid_to_data=True)
 
         return message
 
@@ -89,9 +90,9 @@ class MailFormView(MailPreviewMixin, FormView):
                                                      self.email))
             return redirect('mail_factory_list')
 
-        return redirect('mail_factory_preview_message',
-                        self.mail_name,
-                        translation.get_language())
+        return HttpResponse(
+            factory.get_html_for(self.mail_name, form.cleaned_data,
+                                 cid_to_data=True))
 
     def get_context_data(self, **kwargs):
         data = super(MailFormView, self).get_context_data(**kwargs)

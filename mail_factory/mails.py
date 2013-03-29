@@ -48,7 +48,7 @@ class BaseMail(object):
         """Returns automatic context_data."""
         return kwargs.copy()
 
-    def get_attachments(self, attachments):
+    def get_attachments(self, attachments=None):
         """Return the attachments."""
         return attachments or []
 
