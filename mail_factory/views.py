@@ -2,7 +2,7 @@
 from django.shortcuts import redirect
 from django.conf import settings
 from django.http import Http404, HttpResponse
-from django.utils import translation
+from django.template.base import TemplateDoesNotExist
 from django.views.generic import TemplateView, FormView
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
@@ -36,16 +36,24 @@ class MailPreviewMixin(object):
         if 'text/html' in alternatives:
             return alternatives['text/html']
 
-    def get_mail_preview(self, template_name, lang):
+    def get_mail_preview(self, template_name, lang, cid_to_data=False):
         """Return a preview from a mail's form's initial data."""
         form_class = factory.get_mail_form(self.mail_name)
         form = form_class(mail_class=self.mail_class)
 
-        # render the mail given this language
-        mail = self.mail_class(form.get_context_data())
+        form = form_class(form.get_context_data(), mail_class=self.mail_class)
+        data = form.get_context_data()
+        if form.is_valid():
+            data.update(form.cleaned_data)
+
+        mail = self.mail_class(data)
         message = mail.create_email_msg([settings.ADMINS], lang=lang)
-        message.html = self.get_html_alternative(message,
-                                 cid_to_data=True)
+
+        try:
+            message.html = factory.get_html_for(self.mail_name, data,
+                                                lang=lang, cid_to_data=True)
+        except TemplateDoesNotExist:
+            message.html = False
 
         return message
 
@@ -90,9 +98,15 @@ class MailFormView(MailPreviewMixin, FormView):
                                                      self.email))
             return redirect('mail_factory_list')
 
+        data = None
+
+        if form:
+            data = form.get_context_data()
+            if hasattr(form, 'cleaned_data'):
+                data.update(form.cleaned_data)
+
         return HttpResponse(
-            factory.get_html_for(self.mail_name, form.cleaned_data,
-                                 cid_to_data=True))
+            factory.get_html_for(self.mail_name, data, cid_to_data=True))
 
     def get_context_data(self, **kwargs):
         data = super(MailFormView, self).get_context_data(**kwargs)

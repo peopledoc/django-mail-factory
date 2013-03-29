@@ -152,17 +152,19 @@ class MailFormViewTest(TestCase):
         self.assertEqual(response['location'], reverse('mail_factory_list'))
 
     def test_form_valid_html(self):
+        class MockForm(object):
+            cleaned_data = {'title': 'title', 'content': 'content'}
+
+            def get_context_data(self):
+                return self.cleaned_data
+
         view = views.MailFormView()
-        view.mail_name = 'no_custom'
+        view.mail_name = 'custom_form'  # has templates for html alternative
         view.raw = False
         view.send = False
-        response = view.form_valid(None)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(
-            response['location'],
-            reverse('mail_factory_preview_message',
-                    kwargs={'mail_name': 'no_custom',
-                            'lang': translation.get_language()}))
+        response = view.form_valid(MockForm())
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(isinstance(response, HttpResponse))
 
     def test_get_context_data(self):
         view = views.MailFormView()

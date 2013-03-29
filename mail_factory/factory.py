@@ -70,11 +70,12 @@ class MailFactory(object):
         mail = self.get_mail_object(template_name, context)
         mail.mail_admins(attachments, from_email)
 
-    def get_html_for(self, template_name, context, cid_to_data=False):
+    def get_html_for(self, template_name, context,
+                     lang=None, cid_to_data=False):
         """Preview the body.html mail."""
         mail = self.get_mail_object(template_name, context)
-        mail_content = mail._render_part('body.html')
-        print cid_to_data
+        mail_content = mail._render_part('body.html', lang=lang)
+
         if cid_to_data:
             attachments = mail.get_attachments()
             for filepath, filename, mimetype in attachments:
@@ -86,17 +87,19 @@ class MailFactory(object):
                             'cid:%s' % filename, data_url_encode)
         return mail_content
 
-    def get_text_for(self, template_name, context):
+    def get_text_for(self, template_name, context, lang=None):
         """Return the rendered mail text body."""
         mail = self.get_mail_object(template_name, context)
-        return mail._render_part('body.txt')
+        return mail._render_part('body.txt', lang=lang)
 
-    def get_subject_for(self, template_name, context):
+    def get_subject_for(self, template_name, context, lang=None):
         """Return the rendered mail subject."""
         mail = self.get_mail_object(template_name, context)
-        return mail._render_part('subject.txt')
+        return mail._render_part('subject.txt', lang=lang)
 
-    def get_raw_content(self, template_name, emails, context, from_email=None):
+    def get_raw_content(self, template_name, emails, context,
+                        lang=None, from_email=None):
         """Return raw mail source before sending."""
         mail = self.get_mail_object(template_name, context)
-        return mail.create_email_msg(emails, from_email=from_email)
+        return mail.create_email_msg(emails, from_email=from_email,
+                                     lang=lang)
