@@ -9,7 +9,6 @@ from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse
 from django.test import TestCase
 from django.test.client import RequestFactory
-from django.utils import translation
 
 from .. import factory
 from .. import views
