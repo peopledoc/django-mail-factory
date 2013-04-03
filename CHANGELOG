@@ -1,11 +1,16 @@
 Changelog
 =========
 
+0.6 (unreleased)
+----------------
+
+
 0.5 (2013-04-03)
 ----------------
 
  - Fixes #18 - Return object from get_context_data ModelChoicesField
  - #17 - Display image in Previews
+
 
 0.4 (2013-03-12)
 ----------------
