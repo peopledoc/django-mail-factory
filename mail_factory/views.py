@@ -36,7 +36,7 @@ class MailPreviewMixin(object):
         if 'text/html' in alternatives:
             return alternatives['text/html']
 
-    def get_mail_preview(self, template_name, lang, cid_to_data=False):
+    def get_mail_preview(self, template_name, lang):
         """Return a preview from a mail's form's initial data."""
         form_class = factory.get_mail_form(self.mail_name)
         form = form_class(mail_class=self.mail_class)
