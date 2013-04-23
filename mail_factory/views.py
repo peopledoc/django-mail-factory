@@ -43,8 +43,6 @@ class MailPreviewMixin(object):
 
         form = form_class(form.get_context_data(), mail_class=self.mail_class)
         data = form.get_context_data()
-        if form.is_valid():
-            data.update(form.cleaned_data)
 
         mail = self.mail_class(data)
         message = mail.create_email_msg([settings.ADMINS], lang=lang)
