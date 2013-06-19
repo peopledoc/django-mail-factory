@@ -46,6 +46,9 @@ class MailPreviewMixin(object):
         if form.is_valid():
             data.update(form.cleaned_data)
 
+        # overwrite with preview data if any
+        data.update(form.get_preview_data())
+
         mail = self.mail_class(data)
         message = mail.create_email_msg([settings.ADMINS], lang=lang)
 

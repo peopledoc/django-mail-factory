@@ -33,6 +33,10 @@ class MailForm(forms.Form):
         """By default always return a CharField for a param."""
         return forms.CharField()
 
+    def get_preview_data(self, **kwargs):
+        """Return some preview data, not necessarily valid form data."""
+        return kwargs
+
     def get_context_data(self, **kwargs):
         """Return context data used for the mail preview."""
         data = {}
