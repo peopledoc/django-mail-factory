@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.7 (unreleased)
+0.7 (2013-06-19)
 ----------------
 
  - Added Form.get_preview_data(): provide custom data to override the form's data
