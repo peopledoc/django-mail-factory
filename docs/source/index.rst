@@ -140,6 +140,7 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   django
    api
    template
    interface
