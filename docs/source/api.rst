@@ -84,6 +84,16 @@ can define it here:
                            'header.png', 'image/png'))
             return attach
 
+Now, if you want to use this attached image in your html template, you need to
+use the `cid URI scheme`_ with the name of the attachment, which is the second
+item of the tuple (``header.png`` in our example above):
+
+.. _cid URI scheme: https://en.wikipedia.org/wiki/URI_scheme
+
+.. code-block:: html
+
+    <img src="cid:header.png" alt="This is the header" />
+
 
 Template loading
 ================
