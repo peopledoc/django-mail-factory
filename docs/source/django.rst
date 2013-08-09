@@ -27,8 +27,8 @@ You can first add this pattern in your ``urls.py``:
         'django.contrib.auth.views.password_reset_done')
 
 
-Then you can overload the default templates ``mails/password_reset/subject.txt`` and
-`` mails/password_reset/body.txt``
+Then you can overload the default templates
+``mails/password_reset/subject.txt`` and ``mails/password_reset/body.txt``.
 
 But you can also register your own ``PasswordResetMail``:
 
@@ -53,8 +53,8 @@ But you can also register your own ``PasswordResetMail``:
                        'user': 4,
                        'token': '3gg-37af4e5097565a629f2e',
                        'protocol': settings.SITE_URL.split('/')[0].rstrip(':')}
-    
-    
+
+
     factory.register(PasswordResetMail, PasswordResetForm)
 
 You can then update your urls.py to use this new form:
@@ -63,7 +63,7 @@ You can then update your urls.py to use this new form:
 
     url(_(r'^password_reset/$'),
         'mail_factory.contrib.auth.views.password_reset',
-		{'email_template_name': 'password_reset'}),
+        {'email_template_name': 'password_reset'}),
 
 
 The default PasswordResetMail is not registered in the factory so that
@@ -74,7 +74,7 @@ If you want to use it as is, you can just register it in your app
 
 
 .. code-block:: python
-    
+
     from mail_factory import factory
     from mail_factory.contrib.auth.mails import PasswordResetMail
 
