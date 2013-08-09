@@ -8,7 +8,10 @@ test: bin/python
 	bin/pip install tox
 	bin/tox
 
-docs:
+bin/sphinx-build: bin/python
+	bin/pip install sphinx
+
+docs: bin/sphinx-build
 	bin/pip install sphinx
 	SPHINXBUILD=../bin/sphinx-build $(MAKE) -C docs html $^
 
