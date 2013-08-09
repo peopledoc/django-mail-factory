@@ -90,12 +90,12 @@ Template loading
 
 By default, the template parts will be searched in:
 
-* :file:`templates∕mails/TEMPLATE_NAME/LANGUAGE_CODE/`
-* :file:`templates∕mails/TEMPLATE_NAME/`
+* ``templates/mails/TEMPLATE_NAME/LANGUAGE_CODE/``
+* ``templates/mails/TEMPLATE_NAME/``
 
 But you may want to search in different locations, ie:
 
-* :file:`templates/SITE_DOMAIN/mails/TEMPLATE_NAME/`
+* ``templates/SITE_DOMAIN/mails/TEMPLATE_NAME/``
 
 To do that, you can override the ``get_template_part`` method:
 
