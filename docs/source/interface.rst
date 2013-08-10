@@ -134,13 +134,17 @@ Then the mail form will be autopopulated with this data.
 Creating your application custom MailForm
 =========================================
 
-Let's create a project wide BaseMailForm that uses a ``ModelChoiceField`` on
-the ``auth.models.User`` each time a ``user`` param is needed in the email.
+By default, all email params are represented as a ``forms.CharField()``, which
+uses a basic text input.
+
+Let's create a project wide ``BaseMailForm`` that uses a ``ModelChoiceField``
+on ``auth.models.User`` each time a ``user`` param is needed in the email.
 
 .. code-block:: python
 
     from django.contrib.auth.models import User
-    from mail_factory.forms import MailForm, forms
+    from django import forms
+    from mail_factory.forms import MailForm
 
 
     class BaseMailForm(MailForm):
@@ -151,8 +155,28 @@ the ``auth.models.User`` each time a ``user`` param is needed in the email.
 
             return super(BaseMailForm, self).get_field_for_param(param)
 
-By default, all email params are represented as a ``forms.CharField()``, which
-uses a basic test input.
+Now you need to inherit from this ``BaseMailForm`` to make use of it for your
+custom mail forms:
+
+.. code-block:: python
+
+    class MyCustomMailForm(BaseMailForm):
+        # your own customizations here
+
+If you want this ``BaseMailForm`` to be used automatically when registering a
+mail with no custom form, here's how to do it:
+
+.. code-block:: python
+
+    from mail_factory import MailFactory
+
+
+    class BaseMailFactory(MailFactory):
+        mail_form = BaseMailForm
+    factory = BaseMailFactory
+
+And use this new factory everywhere in your code instead of
+``mail_factory.factory``.
 
 
 Previewing your email
