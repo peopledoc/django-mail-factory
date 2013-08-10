@@ -158,7 +158,7 @@ uses a basic test input.
 Previewing your email
 =====================
 
-Sometimes however, you don't need or want to render the email, having to
+Sometimes however, you don't need or want to **render** the email, having to
 provide some real data (eg a user, a site, some complex model...).
 
 The emails may be written by your sales or marketing team, set up by your
@@ -167,11 +167,14 @@ designer, and all of those don't want to cope with the setting up of real data.
 All they want is to be able to preview the email, in the different languages
 available.
 
-This is where email previewing is useful.
+This is where email **previewing** is useful.
 
-Previewing is available straigh away thanks to sane defaults. It uses the
-data returned by ``get_context_data``, which in turn uses the form's
-Meta.initial, and in last resort, returns "###".
+Previewing is available straight away thanks to sane defaults. It uses the
+data returned by ``get_preview_data`` to add (possibly) non valid data to the
+context used to preview the mail.
+
+This data will override any data that was returned by ``get_context_data``,
+which in turn uses the form's Meta.initial, and in last resort, returns "###".
 
 The preview can thus use fake data: let's take the second example from this
 page, the ``SharePageMail``:
@@ -192,17 +195,20 @@ page, the ``SharePageMail``:
         date = forms.DateTimeField()
 
         class Meta:
-            initial = {'user': User(first_name='John', last_name='Doe'),
-                       'message': 'Some message'}
+            initial = {'message': 'Some message'}
 
-        def get_context_data(self, **kwargs):
-            data = super(SharePageMailForm, self).get_context_data(**kwargs)
-            data['date'] = datetime.date.today(),
+        def get_preview_data(self, **kwargs):
+            data = super(SharePageMailForm, self).get_preview_data(**kwargs)
+            data['date'] = datetime.date.today()
+            # create on-the-fly fake User, not saved in database: not valid data
+            # but still added to context for previewing
+            data['user'] = User(first_name='John', last_name='Doe')
             return data
 
     factory.register(SharePageMail, SharePageMailForm)
 
 With this feature, when displaying the mail form in the admin (to render the
-email with real data), the email will also be previewed (in the different
-available languages) with the fake data provided either by the form's
-``get_context_data`` or by Meta.initial.
+email with real data), the email will also be previewed in the different
+available languages with the fake data provided by the form's
+``get_preview_data``, which overrides the data returned by
+``get_context_data``.
