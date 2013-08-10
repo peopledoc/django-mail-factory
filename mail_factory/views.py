@@ -108,8 +108,13 @@ class MailFormView(MailPreviewMixin, FormView):
             if hasattr(form, 'cleaned_data'):
                 data.update(form.cleaned_data)
 
-        return HttpResponse(
-            factory.get_html_for(self.mail_name, data, cid_to_data=True))
+        try:
+            html = factory.get_html_for(self.mail_name, data,
+                                        cid_to_data=True)
+        except TemplateDoesNotExist:
+            return redirect('mail_factory_html_not_found',
+                            mail_name=self.mail_name)
+        return HttpResponse(html)
 
     def get_context_data(self, **kwargs):
         data = super(MailFormView, self).get_context_data(**kwargs)
@@ -122,6 +127,11 @@ class MailFormView(MailPreviewMixin, FormView):
         data['preview_messages'] = preview_messages
 
         return data
+
+
+class HTMLNotFoundView(TemplateView):
+    """No HTML template was found"""
+    template_name = 'mail_factory/html_not_found.html'
 
 
 class MailPreviewMessageView(MailPreviewMixin, TemplateView):
@@ -147,4 +157,5 @@ class MailPreviewMessageView(MailPreviewMixin, TemplateView):
 
 mail_list = admin_required(MailListView.as_view())
 form = admin_required(MailFormView.as_view())
+html_not_found = admin_required(HTMLNotFoundView.as_view())
 preview_message = admin_required(MailPreviewMessageView.as_view())
