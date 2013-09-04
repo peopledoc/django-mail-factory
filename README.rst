@@ -9,10 +9,10 @@ Django Mail Factory
 Django Mail Factory lets you manage your email in a multilingual project.
 
 * Authors: Rémy Hubscher and `contributors
-  <https://github.com/novagile/django-mail-factory/graphs/contributors>`_
+  <https://github.com/novapost/django-mail-factory/graphs/contributors>`_
 * Licence: BSD
 * Compatibility: Django 1.4+, python2.6 up to python3.3
-* Project URL: https://github.com/novagile/django-mail-factory
+* Project URL: https://github.com/novapost/django-mail-factory
 * Documentation: http://django-mail-factory.rtfd.org/
 
 
@@ -23,7 +23,7 @@ Setup your environment:
 
 ::
 
-    git clone https://github.com/novagile/django-mail-factory.git
+    git clone https://github.com/novapost/django-mail-factory.git
     cd django-mail-factory
 
 Hack and run the tests using `Tox <https://pypi.python.org/pypi/tox>`_ to test
