@@ -24,7 +24,7 @@ Django Mail Factory has support for:
 Other resources
 ---------------
 
-Fork it on: http://github.com/novagile/django-mail-factory/
+Fork it on: http://github.com/novapost/django-mail-factory/
 
 Documentation: http://django-mail-factory.rtfd.org/
 
@@ -38,7 +38,7 @@ From PyPI::
 
 From the github tree::
 
-    pip install -e http://github.com/novagile/django-mail-factory/
+    pip install -e http://github.com/novapost/django-mail-factory/
 
 Then add ``mail_factory`` to your *INSTALLED_APPS*::
 
