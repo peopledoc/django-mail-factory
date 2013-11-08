@@ -105,7 +105,10 @@ class BaseMail(object):
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
         subject = self._render_part('subject.txt', lang=lang).strip()
-        body = self._render_part('body.txt', lang=lang)
+        try:
+            body = self._render_part('body.txt', lang=lang)
+        except TemplateDoesNotExist:
+            body = None
         try:
             body = h.handle(html_content)
             html_content = self._render_part('body.html', lang=lang)
