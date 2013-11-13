@@ -110,10 +110,11 @@ class BaseMail(object):
         except TemplateDoesNotExist:
             body = None
         try:
-            body = h.handle(html_content)
             html_content = self._render_part('body.html', lang=lang)
         except TemplateDoesNotExist:
             html_content = None
+        if html_content is not None and body is None:
+            body = h.handle(html_content)
 
         msg = message_class(
             subject, body, from_email, emails,
