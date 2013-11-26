@@ -1,8 +1,12 @@
 Changelog
 =========
 
-1.0 (unreleased)
-----------------
+0.10 (2013-11-26)
+-----------------
+
+* fixes #43: allow any template name for mails (including those containing "/")
+* fixes #42: add wheel support
+* repository moved to "novapost" on github
 
 
 0.9 (2013-08-12)
