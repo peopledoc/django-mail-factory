@@ -47,3 +47,12 @@ If you want to give a look at the demo (also used for the tests):
 You then need to login on http://localhost:8000/admin, and the email
 administration (preview or render) is available at
 http://localhost:8000/admin/mails/.
+
+
+Release
+=======
+
+To release a new version (including the wheel)::
+
+    pip install wheel
+    python setup.py sdist bdist_wheel upload
