@@ -6,6 +6,7 @@ bin/python:
 
 test: bin/python
 	bin/pip install tox
+	bin/pip install html2text
 	bin/tox
 
 bin/sphinx-build: bin/python
