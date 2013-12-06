@@ -132,7 +132,7 @@ class MailTest(TestCase):
         self.assertEqual(len(msg.alternatives), 0)
         #template without txt
         test_mail.template_name = 'test_no_txt'
-        self.assertEqual(test_mail._render_part('body.html', 'fr'), 'Français')
+        self.assertEqual(test_mail.create_email_msg(emails=['receiver@mail.com',], from_email="receiver@mail.com", lang='fr').body, '# Français\n\n')
 
     def test_create_email_msg_attachments(self):
         class TestMail(BaseMail):
