@@ -5,6 +5,10 @@ Django Mail Factory
 .. image:: https://secure.travis-ci.org/novagile/django-mail-factory.png?branch=master
    :alt: Build Status
    :target: https://travis-ci.org/novagile/django-mail-factory
+.. image:: https://pypip.in/v/django-mail-factory/badge.png
+   :target: https://crate.io/packages/django-mail-factory/
+.. image:: https://pypip.in/d/django-mail-factory/badge.png
+   :target: https://crate.io/packages/django-mail-factory/
 
 Django Mail Factory lets you manage your email in a multilingual project.
 
