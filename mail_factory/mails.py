@@ -113,6 +113,10 @@ class BaseMail(object):
             html_content = self._render_part('body.html', lang=lang)
         except TemplateDoesNotExist:
             html_content = None
+        if html_content is None and body is None:
+            raise TemplateDoesNotExist(
+                "Txt and html templates have not been found")
+
         if html_content is not None and body is None:
             body = h.handle(html_content)
 
