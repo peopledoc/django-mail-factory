@@ -7,6 +7,7 @@ env:
   - DJANGO_VERSION='<1.5'
   - DJANGO_VERSION='==1.5'
 install:
+  - pip install html2text
   - pip install Django$DJANGO_VERSION flake8
   - python setup.py develop
 script:

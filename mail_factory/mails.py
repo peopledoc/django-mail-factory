@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from os.path import join
 
+import html2text
+
 from django.conf import settings
 from django.template import Context, TemplateDoesNotExist
 from django.template.loader import select_template
@@ -98,15 +100,25 @@ class BaseMail(object):
 
     def create_email_msg(self, emails, attachments=None, from_email=None,
                          lang=None, message_class=EmailMultiRelated):
+        h = html2text.HTML2Text()
         """Create an email message instance."""
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
         subject = self._render_part('subject.txt', lang=lang).strip()
-        body = self._render_part('body.txt', lang=lang)
+        try:
+            body = self._render_part('body.txt', lang=lang)
+        except TemplateDoesNotExist:
+            body = None
         try:
             html_content = self._render_part('body.html', lang=lang)
         except TemplateDoesNotExist:
             html_content = None
+        if html_content is None and body is None:
+            raise TemplateDoesNotExist(
+                "Txt and html templates have not been found")
+
+        if html_content is not None and body is None:
+            body = h.handle(html_content)
 
         msg = message_class(
             subject, body, from_email, emails,
