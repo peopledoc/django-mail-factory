@@ -1,0 +1,3 @@
+Article by {{ article.user }}
+
+{{ article.content }}

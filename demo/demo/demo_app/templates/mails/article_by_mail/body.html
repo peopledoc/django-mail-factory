@@ -1,0 +1,10 @@
+{% extends "mails/base.html" %}
+
+{% block content %}
+<p>Article from {{ article.user }}</p>
+<p>&nbsp;</p>
+
+<p>{{ article.content|linebreaks }}</p>
+{% endblock %}
+
+{% block title %}A new article from {{ article.user }}{% endblock %}
