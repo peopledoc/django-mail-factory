@@ -100,7 +100,6 @@ class BaseMail(object):
 
     def create_email_msg(self, emails, attachments=None, from_email=None,
                          lang=None, message_class=EmailMultiRelated):
-        h = html2text.HTML2Text()
         """Create an email message instance."""
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
@@ -113,11 +112,16 @@ class BaseMail(object):
             html_content = self._render_part('body.html', lang=lang)
         except TemplateDoesNotExist:
             html_content = None
+
+        # If we have neither a html or txt template
         if html_content is None and body is None:
             raise TemplateDoesNotExist(
                 "Txt and html templates have not been found")
 
+        # If we have the html template only, we build automatically
+        # txt content.
         if html_content is not None and body is None:
+            h = html2text.HTML2Text()
             body = h.handle(html_content)
 
         msg = message_class(
