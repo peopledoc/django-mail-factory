@@ -1,0 +1,1 @@
+A new article from {{ article.user }}
