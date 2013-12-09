@@ -87,19 +87,15 @@ class MailFormView(MailPreviewMixin, FormView):
         return factory.get_mail_form(self.mail_name)
 
     def form_valid(self, form):
-
-        data = form.get_context_data()
-        data.update(form.cleaned_data)
-
         if self.raw:
             return HttpResponse('<pre>%s</pre>' %
                                 factory.get_raw_content(
                                     self.mail_name,
                                     [settings.DEFAULT_FROM_EMAIL],
-                                    data).message())
+                                    form.cleaned_data).message())
 
         if self.send:
-            factory.mail(self.mail_name, [self.email], data)
+            factory.mail(self.mail_name, [self.email], form.cleaned_data)
             messages.success(self.request,
                              '%s mail sent to %s' % (self.mail_name,
                                                      self.email))
