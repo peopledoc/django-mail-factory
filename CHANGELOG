@@ -1,8 +1,10 @@
 Changelog
 =========
 
-0.11 (unreleased)
+0.11 (2014-01-13)
 -----------------
+
+* fixes #47m: wrong arg order in administration
 
 
 0.10 (2013-11-26)
