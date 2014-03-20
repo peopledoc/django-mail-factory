@@ -1,19 +1,16 @@
 language: python
-python:
-  - "2.6"
-  - "2.7"
-  - "3.3"
+python: 2.7
 env:
-  - DJANGO_VERSION='<1.5'
-  - DJANGO_VERSION='==1.5'
-install:
-  - pip install html2text
-  - pip install Django$DJANGO_VERSION flake8
-  - python setup.py develop
+  - TOX_ENV=py26-1.4
+  - TOX_ENV=py26-1.5
+  - TOX_ENV=py27-1.4
+  - TOX_ENV=py27-1.5
+  - TOX_ENV=py33-1.5
+  - TOX_ENV=py33-1.6
+  - TOX_ENV=py34-1.5
+  - TOX_ENV=py34-1.6
+  - TOX_ENV=flake8
 script:
-  - python demo/manage.py test mail_factory
-  - flake8 mail_factory
-matrix:
-  exclude:
-    - python: "3.3"
-      env: DJANGO_VERSION='<1.5'
+    - tox -e $TOX_ENV
+install:
+    - pip install tox
