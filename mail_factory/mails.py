@@ -35,7 +35,7 @@ class BaseMail(object):
 
         # Check that all the mandatory context is present.
         for key in self.get_params():
-            if not key in context:
+            if key not in context:
                 raise exceptions.MissingMailContextParamException(repr(key))
 
     def get_language(self):
