@@ -9,7 +9,7 @@ from os.path import basename
 
 from django.test import TestCase
 
-from .. import messages
+from mail_factory import messages
 
 
 class EmailMultiRelatedTest(TestCase):

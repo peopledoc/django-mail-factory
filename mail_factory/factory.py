@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import base64
-from . import exceptions
-from .forms import MailForm
+
+from mail_factory import exceptions
+from mail_factory.forms import MailForm
 
 
 class MailFactory(object):

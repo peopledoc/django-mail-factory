@@ -9,8 +9,8 @@ from __future__ import unicode_literals
 from django import forms
 from django.test import TestCase
 
-from ..forms import MailForm
-from ..mails import BaseMail
+from mail_factory.forms import MailForm
+from mail_factory.mails import BaseMail
 
 
 class FormTest(TestCase):

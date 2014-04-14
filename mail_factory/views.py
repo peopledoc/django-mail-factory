@@ -7,7 +7,8 @@ from django.views.generic import TemplateView, FormView
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 
-from . import factory, exceptions
+from mail_factory import factory, exceptions
+
 
 admin_required = user_passes_test(lambda x: x.is_superuser)
 
