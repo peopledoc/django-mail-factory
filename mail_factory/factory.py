@@ -29,7 +29,7 @@ class MailFactory(object):
 
     def unregister(self, mail_klass):
         """Unregister a Mail class from the factory map."""
-        if not mail_klass in self.mail_map.values():
+        if mail_klass not in self.mail_map.values():
             raise exceptions.MailFactoryError(
                 '%s is not registered' % mail_klass.template_name)
 
@@ -40,7 +40,7 @@ class MailFactory(object):
 
     def get_mail_class(self, template_name):
         """Return the registered mail class for this template name."""
-        if not template_name in self.mail_map:
+        if template_name not in self.mail_map:
             raise exceptions.MailFactoryError(
                 '%s is not registered' % template_name)
 
@@ -53,7 +53,7 @@ class MailFactory(object):
 
     def get_mail_form(self, template_name):
         """Return the registered MailForm for this template name."""
-        if not template_name in self.form_map:
+        if template_name not in self.form_map:
             raise exceptions.MailFactoryError(
                 'No form registered for %s' % template_name)
         return self.form_map[template_name]
