@@ -35,10 +35,10 @@ class MailTest(TestCase):
         class TestMail(BaseMail):
             params = []
 
-        translation.activate('en')
-        self.assertEqual(TestMail().get_language(), 'en')
-        translation.activate('fr')
-        self.assertEqual(TestMail().get_language(), 'fr')
+        with translation.override('en'):
+            self.assertEqual(TestMail().get_language(), 'en')
+        with translation.override('fr'):
+            self.assertEqual(TestMail().get_language(), 'fr')
 
     def test_get_params(self):
         class TestMail(BaseMail):
