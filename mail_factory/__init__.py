@@ -12,3 +12,15 @@ from mail_factory.forms import MailForm  # NOQA
 from mail_factory.mails import BaseMail  # NOQA
 
 factory = MailFactory()
+
+
+try:  # Only from Django1.7.
+    from django.utils.module_loading import autodiscover_modules
+
+    def autodiscover():
+        autodiscover_modules('mails', register_to=factory)
+except ImportError:
+    pass
+
+
+default_app_config = 'mail_factory.apps.MailFactoryConfig'

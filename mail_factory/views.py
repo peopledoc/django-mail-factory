@@ -21,7 +21,7 @@ class MailListView(TemplateView):
         data = super(MailListView, self).get_context_data(**kwargs)
         mail_list = []
 
-        for mail_name, mail_class in sorted(factory.mail_map.items(),
+        for mail_name, mail_class in sorted(factory._registry.items(),
                                             key=lambda x: x[0]):
             mail_list.append((mail_name, mail_class.__name__))
         data['mail_map'] = mail_list

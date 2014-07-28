@@ -20,7 +20,7 @@ class MailListViewTest(TestCase):
     def test_get_context_data(self):
         data = views.MailListView().get_context_data()
         self.assertIn('mail_map', data)
-        self.assertEqual(len(data), len(factory.mail_map))
+        self.assertEqual(len(data), len(factory._registry))
 
 
 class MailPreviewMixinTest(TestCase):
@@ -45,7 +45,7 @@ class MailPreviewMixinTest(TestCase):
     def test_get_mail_preview_language(self):
         view = views.MailFormView()
         view.mail_name = 'no_custom'
-        view.mail_class = factory.mail_map['no_custom']
+        view.mail_class = factory._registry['no_custom']
         message = view.get_mail_preview('no_custom', 'en')
         self.assertEqual(message.subject, 'Title in english: ###')
         self.assertEqual(message.body, 'Content in english: ###')
@@ -56,14 +56,14 @@ class MailPreviewMixinTest(TestCase):
     def test_get_mail_preview_no_html(self):
         view = views.MailFormView()
         view.mail_name = 'no_custom'  # no template for html alternative
-        view.mail_class = factory.mail_map['no_custom']
+        view.mail_class = factory._registry['no_custom']
         message = view.get_mail_preview('no_custom', 'en')
         self.assertFalse(message.html)
 
     def test_get_mail_preview_html(self):
         view = views.MailFormView()
         view.mail_name = 'custom_form'  # has templates for html alternative
-        view.mail_class = factory.mail_map['custom_form']
+        view.mail_class = factory._registry['custom_form']
         message = view.get_mail_preview('custom_form', 'en')
         self.assertTrue(message.html)
 
@@ -88,7 +88,7 @@ class MailFormViewTest(TestCase):
         view.request = request
         view.dispatch(request, 'no_custom')
         self.assertEqual(view.mail_name, 'no_custom')
-        self.assertEqual(view.mail_class, factory.mail_map['no_custom'])
+        self.assertEqual(view.mail_class, factory._registry['no_custom'])
         self.assertTrue(view.raw)
         self.assertTrue(view.send)
         self.assertEqual(view.email, 'email')
@@ -98,7 +98,7 @@ class MailFormViewTest(TestCase):
                                            kwargs={'mail_name': 'unknown'}))
         view = views.MailFormView()
         view.mail_name = 'no_custom'
-        view.mail_class = factory.mail_map['no_custom']
+        view.mail_class = factory._registry['no_custom']
         view.request = request
         self.assertIn('mail_class', view.get_form_kwargs())
         self.assertEqual(view.get_form_kwargs()['mail_class'].__name__,
@@ -204,13 +204,13 @@ class MailPreviewMessageViewTest(TestCase):
         view.dispatch(request, 'no_custom', 'fr')
         self.assertEqual(view.mail_name, 'no_custom')
         self.assertEqual(view.lang, 'fr')
-        self.assertEqual(view.mail_class, factory.mail_map['no_custom'])
+        self.assertEqual(view.mail_class, factory._registry['no_custom'])
 
     def test_get_context_data(self):
         view = views.MailPreviewMessageView()
         view.lang = 'fr'
         view.mail_name = 'no_custom'
-        view.mail_class = factory.mail_map['no_custom']
+        view.mail_class = factory._registry['no_custom']
         data = view.get_context_data()
         self.assertIn('mail_name', data)
         self.assertEqual(data['mail_name'], 'no_custom')

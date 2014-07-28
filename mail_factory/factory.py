@@ -6,7 +6,7 @@ from .forms import MailForm
 
 class MailFactory(object):
     mail_form = MailForm
-    mail_map = {}
+    _registry = {}  # Needed: django.utils.module_loading.autodiscover_modules.
     form_map = {}
 
     def register(self, mail_klass, mail_form=None):
@@ -16,35 +16,35 @@ class MailFactory(object):
                 "%s needs a template_name parameter to be registered" % (
                     mail_klass.__name__))
 
-        if mail_klass.template_name in self.mail_map:
+        if mail_klass.template_name in self._registry:
             raise exceptions.MailFactoryError(
                 '%s is already registered for %s' % (
                     mail_klass.template_name,
-                    self.mail_map[mail_klass.template_name].__name__))
+                    self._registry[mail_klass.template_name].__name__))
 
-        self.mail_map[mail_klass.template_name] = mail_klass
+        self._registry[mail_klass.template_name] = mail_klass
 
         mail_form = mail_form or self.mail_form
         self.form_map[mail_klass.template_name] = mail_form
 
     def unregister(self, mail_klass):
         """Unregister a Mail class from the factory map."""
-        if mail_klass not in self.mail_map.values():
+        if mail_klass not in self._registry.values():
             raise exceptions.MailFactoryError(
                 '%s is not registered' % mail_klass.template_name)
 
         key = mail_klass.template_name
 
-        del self.mail_map[key]
+        del self._registry[key]
         del self.form_map[key]
 
     def get_mail_class(self, template_name):
         """Return the registered mail class for this template name."""
-        if template_name not in self.mail_map:
+        if template_name not in self._registry:
             raise exceptions.MailFactoryError(
                 '%s is not registered' % template_name)
 
-        return self.mail_map[template_name]
+        return self._registry[template_name]
 
     def get_mail_object(self, template_name, context=None):
         """Return the registered mail class instance for this template name."""

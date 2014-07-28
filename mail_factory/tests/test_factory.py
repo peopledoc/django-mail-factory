@@ -17,8 +17,8 @@ from ..mails import BaseMail
 class RegistrationTest(TestCase):
 
     def tearDown(self):
-        if 'foo' in factory.mail_map:
-            del factory.mail_map['foo']
+        if 'foo' in factory._registry:
+            del factory._registry['foo']
 
     def test_registration_without_template_name(self):
         class TestMail(BaseMail):
@@ -40,8 +40,8 @@ class RegistrationTest(TestCase):
             template_name = 'foo'
 
         factory.register(TestMail)
-        self.assertIn('foo', factory.mail_map)
-        self.assertEqual(factory.mail_map['foo'], TestMail)
+        self.assertIn('foo', factory._registry)
+        self.assertEqual(factory._registry['foo'], TestMail)
         self.assertIn('foo', factory.form_map)
         self.assertEqual(factory.form_map['foo'], MailForm)  # default form
 
@@ -61,9 +61,9 @@ class RegistrationTest(TestCase):
             template_name = 'foo'
 
         factory.register(TestMail)
-        self.assertIn('foo', factory.mail_map)
+        self.assertIn('foo', factory._registry)
         factory.unregister(TestMail)
-        self.assertNotIn('foo', factory.mail_map)
+        self.assertNotIn('foo', factory._registry)
         with self.assertRaises(MailFactoryError):
             factory.unregister(TestMail)
 

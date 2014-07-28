@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import django
 from django.conf import settings
 from django.utils.importlib import import_module
 from django.utils.module_loading import module_has_submodule
@@ -20,4 +21,8 @@ def autodiscover():
             if module_has_submodule(app_module, 'mails'):
                 raise
 
-autodiscover()
+
+# If we're using Django >= 1.7, use the new app-loading mecanism which is way
+# better.
+if django.VERSION < (1, 7):
+    autodiscover()

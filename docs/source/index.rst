@@ -133,6 +133,13 @@ You can then directly call your emails from the factory with their
 It also allows you to list your emails in the administration, preview and test
 them by sending them to a custom address with a custom context.
 
+.. note:: `mail_factory` automatically performs autodiscovery of mails modules
+          in installed applications. To prevent it, change your INSTALLED_APPS
+          to contain 'mail_factory.SimpleMailFactoryConfig' instead of
+          'mail_factory'.
+
+          This is only available in Django 1.7 and above.
+
 
 Contents
 --------
