@@ -25,8 +25,12 @@ class MailForm(forms.Form):
                     self.fields[param] = self.get_field_for_param(param)
 
             keyOrder = self.mail_class.params
-            keyOrder += [x for x in self.fields.keyOrder
-                         if x not in self.mail_class.params]
+            if hasattr(self.fields, 'keyOrder'):  # Django < 1.7
+                keyOrder += [x for x in self.fields.keyOrder
+                             if x not in self.mail_class.params]
+            else:  # Django >= 1.7
+                keyOrder += [x for x in self.fields.keys()
+                             if x not in self.mail_class.params]
             self.fields.keyOrder = keyOrder
 
     def get_field_for_param(self, param):
