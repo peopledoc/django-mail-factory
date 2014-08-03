@@ -130,6 +130,8 @@ class BaseMail(object):
                                          "SUPPORT_EMAIL",
                                          settings.DEFAULT_FROM_EMAIL)})
         if html_content:
+            if isinstance(html_content, unicode):
+                html_content = html_content.encode('utf-8')
             msg.attach_alternative(html_content, 'text/html')
 
         attachments = self.get_attachments(attachments)
