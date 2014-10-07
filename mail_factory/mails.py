@@ -99,7 +99,8 @@ class BaseMail(object):
         return rendered.strip()
 
     def create_email_msg(self, emails, attachments=None, from_email=None,
-                         lang=None, message_class=EmailMultiRelated):
+                         lang=None, message_class=EmailMultiRelated,
+                         headers=None):
         """Create an email message instance."""
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
@@ -124,11 +125,12 @@ class BaseMail(object):
             h = html2text.HTML2Text()
             body = h.handle(html_content)
 
-        msg = message_class(
-            subject, body, from_email, emails,
-            headers={'Reply-To': getattr(settings,
-                                         "SUPPORT_EMAIL",
-                                         settings.DEFAULT_FROM_EMAIL)})
+        if headers is None:
+            headers = {'Reply-To': getattr(settings,
+                                           "SUPPORT_EMAIL",
+                                           settings.DEFAULT_FROM_EMAIL)}
+
+        msg = message_class(subject, body, from_email, emails, headers=headers)
         if html_content:
             msg.attach_alternative(html_content, 'text/html')
 
@@ -143,10 +145,10 @@ class BaseMail(object):
                         msg.attach(filename, attachment.read(), mimetype)
         return msg
 
-    def send(self, emails, attachments=None, from_email=None):
+    def send(self, emails, attachments=None, from_email=None, headers=None):
         """Create the message and send it to emails."""
         message = self.create_email_msg(emails, attachments=attachments,
-                                        from_email=from_email)
+                                        from_email=from_email, headers=headers)
         message.send()
 
     def mail_admins(self, attachments=None, from_email=None):
