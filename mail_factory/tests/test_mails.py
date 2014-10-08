@@ -118,7 +118,14 @@ class MailTest(TestCase):
         self.assertEqual(test_mail.create_email_msg([]).from_email,
                          settings.DEFAULT_FROM_EMAIL)
         msg = test_mail.create_email_msg([], from_email='foo')
-        self.assertEqual(msg.from_email, 'foo')
+        # Default header sets reply-to
+        msg = test_mail.create_email_msg([])
+        self.assertIn('Reply-To', msg.extra_headers)
+        self.assertEquals(msg.extra_headers['Reply-To'],
+                          settings.DEFAULT_FROM_EMAIL)
+        # If headers are forced, check the ones passed are used
+        msg = test_mail.create_email_msg([], headers={'MyHeader': 'Override'})
+        self.assertEquals(msg.extra_headers, {'MyHeader': 'Override'})
         # templates with html
         msg = test_mail.create_email_msg([], lang='fr')
         self.assertEqual(len(msg.alternatives), 1)
