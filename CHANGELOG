@@ -1,10 +1,11 @@
 Changelog
 =========
 
-0.13 (unreleased)
+0.13 (2014-10-08)
 -----------------
 
-- nothing yet
+- Add Reply-To default header as well as headers management.
+
 
 0.12 (2014-07-28)
 -----------------
