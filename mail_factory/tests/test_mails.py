@@ -183,3 +183,22 @@ class MailTest(TestCase):
         TestMail().mail_admins()
         self.assertEqual(len(mail.outbox), before + 1)
         self.assertEqual(mail.outbox[-1].to, ['some_admin@example.com'])
+
+    def test_no_reply(self):
+        class TestMail(BaseMail):
+            params = []
+            template_name = 'test'
+
+        test_mail = TestMail()
+        msg = test_mail.create_email_msg([])
+
+        self.assertIn('Reply-To', msg.extra_headers)
+        self.assertEquals(msg.extra_headers['Reply-To'],
+                          settings.DEFAULT_FROM_EMAIL)
+
+        settings.NO_REPLY_EMAIL = 'no-reply@example.com'
+        msg = test_mail.create_email_msg([])
+
+        self.assertIn('Reply-To', msg.extra_headers)
+        self.assertEquals(msg.extra_headers['Reply-To'],
+                          settings.NO_REPLY_EMAIL)
