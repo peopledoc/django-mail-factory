@@ -126,9 +126,12 @@ class BaseMail(object):
             body = h.handle(html_content)
 
         if headers is None:
-            headers = {'Reply-To': getattr(settings,
-                                           "SUPPORT_EMAIL",
-                                           settings.DEFAULT_FROM_EMAIL)}
+            reply_to = getattr(settings, "NO_REPLY_EMAIL", None)
+            if not reply_to:
+                reply_to = getattr(settings, "SUPPORT_EMAIL",
+                                   settings.DEFAULT_FROM_EMAIL)
+
+            headers = {'Reply-To': reply_to}
 
         msg = message_class(subject, body, from_email, emails, headers=headers)
         if html_content:
