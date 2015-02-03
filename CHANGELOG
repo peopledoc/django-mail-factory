@@ -1,10 +1,10 @@
 Changelog
 =========
 
-0.14 (unreleased)
+0.14 (2015-02-03)
 -----------------
 
-- No changes yet.
+- Add support of no reply address (#54).
 
 
 0.13 (2014-10-08)
