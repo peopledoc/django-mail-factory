@@ -36,3 +36,5 @@ share/
 
 # local sqlite database
 db.sqlite
+
+pip-selfcheck.json
