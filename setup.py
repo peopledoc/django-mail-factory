@@ -30,7 +30,7 @@ if __name__ == '__main__':  # ``import setup`` doesn't trigger setup().
         keywords='django mail manager',
         author='Rémy Hubscher',
         author_email='hubscher.remy@gmail.com',
-        url='https://github.com/novapost/django-mail-factory',
+        url='https://github.com/novafloss/django-mail-factory',
         license='BSD Licence',
         packages=find_packages(),
         include_package_data=True,

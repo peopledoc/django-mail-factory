@@ -16,4 +16,4 @@ docs: bin/sphinx-build
 	SPHINXBUILD=../bin/sphinx-build $(MAKE) -C docs html $^
 
 clean:
-	rm -rf bin .tox include/ lib/ man/ django_mail_factory.egg-info/ build/
+	rm -rf bin .tox include/ lib/ man/ django_mail_factory.egg-info/ build/ pip-selfcheck.json

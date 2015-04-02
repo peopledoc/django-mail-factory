@@ -2,9 +2,9 @@
 Django Mail Factory
 ###################
 
-.. image:: https://secure.travis-ci.org/novapost/django-mail-factory.png?branch=master
+.. image:: https://secure.travis-ci.org/novafloss/django-mail-factory.png?branch=master
    :alt: Build Status
-   :target: https://travis-ci.org/novapost/django-mail-factory
+   :target: https://travis-ci.org/novafloss/django-mail-factory
 .. image:: https://pypip.in/v/django-mail-factory/badge.png
    :target: https://crate.io/packages/django-mail-factory/
 .. image:: https://pypip.in/d/django-mail-factory/badge.png
@@ -13,10 +13,10 @@ Django Mail Factory
 Django Mail Factory lets you manage your email in a multilingual project.
 
 * Authors: Rémy Hubscher and `contributors
-  <https://github.com/novapost/django-mail-factory/graphs/contributors>`_
+  <https://github.com/novafloss/django-mail-factory/graphs/contributors>`_
 * Licence: BSD
 * Compatibility: Django 1.4+, python2.6 up to python3.4
-* Project URL: https://github.com/novapost/django-mail-factory
+* Project URL: https://github.com/novafloss/django-mail-factory
 * Documentation: http://django-mail-factory.rtfd.org/
 
 
@@ -27,7 +27,7 @@ Setup your environment:
 
 ::
 
-    git clone https://github.com/novapost/django-mail-factory.git
+    git clone https://github.com/novafloss/django-mail-factory.git
     cd django-mail-factory
 
 Hack and run the tests using `Tox <https://pypi.python.org/pypi/tox>`_ to test
@@ -46,7 +46,7 @@ If you want to give a look at the demo (also used for the tests):
 
 You then need to login on http://localhost:8000/admin, and the email
 administration (preview or render) is available at
-http://localhost:8000/admin/mails/.
+http://localhost:8000/mail_factory/.
 
 
 Release
