@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.15 (unreleased)
+0.15 (2015-11-18)
 -----------------
 
 - Run the tests with Django 1.8
