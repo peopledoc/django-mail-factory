@@ -4,7 +4,7 @@ Changelog
 0.15 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Run the tests with Django 1.8
 
 
 0.14 (2015-02-03)
