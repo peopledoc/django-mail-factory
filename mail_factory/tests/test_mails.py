@@ -158,11 +158,9 @@ class MailTest(TestCase):
 
         test_mail = TestMail()
         attachments = [
-            (finders.find('admin/img/nav-bg.gif'), 'nav-bg.gif', 'image/png'),
             (finders.find('admin/css/base.css'), 'base.css', 'plain/text')]
         msg = test_mail.create_email_msg([], attachments=attachments)
         self.assertEqual(len(msg.attachments), 1)  # base.css
-        self.assertEqual(len(msg.related_attachments), 1)  # nav-bg.gif
 
     def test_send(self):
         class TestMail(BaseMail):
