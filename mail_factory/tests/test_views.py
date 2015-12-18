@@ -168,13 +168,15 @@ class MailFormViewTest(TestCase):
     def test_get_context_data(self):
         view = views.MailFormView()
         view.mail_name = 'no_custom'
+        view.mail_class = None
         # save the current
-        old_get_mail_preview = views.MailPreviewMixin.get_mail_preview
+        old_get_mail_preview = view.get_mail_preview
         # mock
-        views.MailPreviewMixin.get_mail_preview = lambda x, y, z: 'mocked'
+        view.get_mail_preview = lambda x, y, *args, **kwargs: 'mocked'
+        view.request = self.factory.get('/')
         data = view.get_context_data()
         # restore after mock
-        views.MailPreviewMixin.get_mail_preview = old_get_mail_preview
+        view.get_mail_preview = old_get_mail_preview
         self.assertIn('mail_name', data)
         self.assertEqual(data['mail_name'], 'no_custom')
         self.assertIn('preview_messages', data)
