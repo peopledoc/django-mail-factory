@@ -1,10 +1,11 @@
 Changelog
 =========
 
-0.16 (unreleased)
+0.16 (2016-07-01)
 -----------------
 
-- Nothing changed yet.
+- Use standard library instead of django.utils.importlib
+- Fix flake8 issue with imports
 
 
 0.15 (2015-11-18)
