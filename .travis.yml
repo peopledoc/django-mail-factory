@@ -18,9 +18,7 @@ matrix:
   include:
     - python: 3.5
       env: TOX_ENV=py35-django18
-  include:
     - python: 3.5
       env: TOX_ENV=py35-django19
-  include:
     - python: 3.5
       env: TOX_ENV=py35-django110
