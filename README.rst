@@ -15,7 +15,7 @@ Django Mail Factory lets you manage your email in a multilingual project.
 * Authors: Rémy Hubscher and `contributors
   <https://github.com/novafloss/django-mail-factory/graphs/contributors>`_
 * Licence: BSD
-* Compatibility: Django 1.4+, python2.6 up to python3.4
+* Compatibility: Django 1.8, 1.9, 1.10, python2.7 and python3.4
 * Project URL: https://github.com/novafloss/django-mail-factory
 * Documentation: http://django-mail-factory.rtfd.org/
 
