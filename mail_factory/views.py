@@ -2,7 +2,7 @@
 from django.shortcuts import redirect
 from django.conf import settings
 from django.http import Http404, HttpResponse
-from django.template.base import TemplateDoesNotExist
+from django.template import TemplateDoesNotExist
 from django.views.generic import TemplateView, FormView
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
