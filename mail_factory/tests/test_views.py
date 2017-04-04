@@ -166,8 +166,12 @@ class MailFormViewTest(TestCase):
         self.assertTrue(isinstance(response, HttpResponse))
 
     def test_get_context_data(self):
+        request = self.factory.get(reverse('mail_factory_form',
+                                           kwargs={'mail_name': 'unknown'}))
         view = views.MailFormView()
         view.mail_name = 'no_custom'
+        view.mail_class = factory._registry['no_custom']
+        view.request = request
         # save the current
         old_get_mail_preview = views.MailPreviewMixin.get_mail_preview
         # mock

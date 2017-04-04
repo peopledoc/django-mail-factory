@@ -4,7 +4,8 @@ Changelog
 0.17 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Dropped support for Django < 1.8 (#67)
+- Added support for Django 1.9, 1.10 (#68, #69)
 
 
 0.16 (2016-07-01)

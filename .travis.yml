@@ -1,21 +1,29 @@
 language: python
-python: 2.7
-env:
-  - TOX_ENV=py26-django14
-  - TOX_ENV=py26-django15
-  - TOX_ENV=py26-django16
-  - TOX_ENV=py27-django14
-  - TOX_ENV=py27-django15
-  - TOX_ENV=py27-django16
-  - TOX_ENV=py27-django17
-  - TOX_ENV=py27-django18
-  - TOX_ENV=py33-django15
-  - TOX_ENV=py33-django16
-  - TOX_ENV=py33-django17
-  - TOX_ENV=py33-django18
-  - TOX_ENV=py34-django17
-  - TOX_ENV=py34-django18
-  - TOX_ENV=flake8
+matrix:
+    include:
+      # Python version is just for the look on travis.
+        - python: 2.7
+          env: TOX_ENV=py27-django18
+        - python: 2.7
+          env: TOX_ENV=py27-django19
+        - python: 2.7
+          env: TOX_ENV=py27-django110
+
+        - python: 3.4
+          env: TOX_ENV=py34-django18
+        - python: 3.4
+          env: TOX_ENV=py34-django19
+        - python: 3.4
+          env: TOX_ENV=py34-django110
+
+        - python: 3.5
+          env: TOX_ENV=py35-django18
+        - python: 3.5
+          env: TOX_ENV=py35-django19
+        - python: 3.5
+          env: TOX_ENV=py35-django110
+
+        - env: TOX_ENV=flake8
 script:
     - tox -e $TOX_ENV
 install:
