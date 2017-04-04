@@ -8,8 +8,8 @@ from django.template import Context, TemplateDoesNotExist
 from django.template.loader import select_template
 from django.utils import translation
 
-from . import exceptions
-from .messages import EmailMultiRelated
+from mail_factory import exceptions
+from mail_factory.messages import EmailMultiRelated
 
 
 class BaseMail(object):

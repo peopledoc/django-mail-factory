@@ -10,9 +10,9 @@ from django.http import Http404, HttpResponse
 from django.test import TestCase
 from django.test.client import RequestFactory
 
-from .. import factory
-from .. import views
-from ..forms import MailForm
+from mail_factory import factory
+from mail_factory import views
+from mail_factory.forms import MailForm
 
 
 class MailListViewTest(TestCase):

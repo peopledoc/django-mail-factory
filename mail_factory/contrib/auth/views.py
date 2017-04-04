@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.views import password_reset as django_password_reset
-from .forms import PasswordResetForm
+
+from mail_factory.forms import PasswordResetForm
 
 
 def password_reset(request, **kwargs):

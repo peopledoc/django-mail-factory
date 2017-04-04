@@ -13,8 +13,8 @@ from django.template import TemplateDoesNotExist
 from django.test import TestCase
 from django.utils import translation
 
-from ..exceptions import MissingMailContextParamException
-from ..mails import BaseMail
+from mail_factory.exceptions import MissingMailContextParamException
+from mail_factory.mails import BaseMail
 
 
 class MailTest(TestCase):

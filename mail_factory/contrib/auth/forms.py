@@ -5,8 +5,8 @@ from django.contrib.sites.models import get_current_site
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import int_to_base36
 
-from .mails import PasswordResetMail
 from mail_factory import factory
+from mail_factory.mails import PasswordResetMail
 
 
 class PasswordResetForm(PasswordResetForm):

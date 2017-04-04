@@ -8,10 +8,10 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.test import TestCase
 
-from .. import factory
-from ..exceptions import MailFactoryError
-from ..forms import MailForm
-from ..mails import BaseMail
+from mail_factory import factory
+from mail_factory.exceptions import MailFactoryError
+from mail_factory.forms import MailForm
+from mail_factory.mails import BaseMail
 
 
 class RegistrationTest(TestCase):
