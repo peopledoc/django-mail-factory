@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.17 (unreleased)
+0.17 (2017-05-10)
 -----------------
 
 - Dropped support for Django < 1.8 (#67)
