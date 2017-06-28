@@ -4,7 +4,7 @@ from os.path import join
 import html2text
 
 from django.conf import settings
-from django.template import Context, TemplateDoesNotExist
+from django.template import TemplateDoesNotExist
 from django.template.loader import select_template
 from django.utils import translation
 
@@ -29,8 +29,7 @@ class BaseMail(object):
         """Create a mail instance from a context."""
         # Create the context
         context = context or {}
-        c = self.get_context_data(**context)
-        self.context = Context(c)
+        self.context = self.get_context_data(**context)
         self.lang = self.get_language()
 
         # Check that all the mandatory context is present.
