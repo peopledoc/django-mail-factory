@@ -4,7 +4,7 @@ Changelog
 0.18 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fix django 1.10 compatibility (render() must be called with a dict, not a Context)
 
 
 0.17 (2017-05-10)
