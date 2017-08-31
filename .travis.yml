@@ -8,6 +8,8 @@ matrix:
           env: TOX_ENV=py27-django19
         - python: 2.7
           env: TOX_ENV=py27-django110
+        - python: 2.7
+          env: TOX_ENV=py27-django111
 
         - python: 3.4
           env: TOX_ENV=py34-django18
@@ -15,6 +17,8 @@ matrix:
           env: TOX_ENV=py34-django19
         - python: 3.4
           env: TOX_ENV=py34-django110
+        - python: 3.4
+          env: TOX_ENV=py34-django111
 
         - python: 3.5
           env: TOX_ENV=py35-django18
@@ -22,6 +26,8 @@ matrix:
           env: TOX_ENV=py35-django19
         - python: 3.5
           env: TOX_ENV=py35-django110
+        - python: 3.5
+          env: TOX_ENV=py35-django111
 
         - env: TOX_ENV=flake8
 script:

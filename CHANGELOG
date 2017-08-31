@@ -4,7 +4,9 @@ Changelog
 0.19 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Drop Python 2.6 support
+- Drop Django < 1.7 support
+- Run the tests with Django 1.11
 
 
 0.18 (2017-07-17)
