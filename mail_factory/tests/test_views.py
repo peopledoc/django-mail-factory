@@ -5,6 +5,12 @@ are automatically registered, and serve as fixture."""
 
 from __future__ import unicode_literals
 
+from distutils.version import StrictVersion
+from unittest import skipUnless
+import warnings
+
+import django
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse
 from django.test import TestCase
@@ -21,6 +27,41 @@ class MailListViewTest(TestCase):
         data = views.MailListView().get_context_data()
         self.assertIn('mail_map', data)
         self.assertEqual(len(data), len(factory._registry))
+
+
+class TemplateTest(TestCase):
+    """
+    Simple test case to get a view and check the template doesn't
+    raise any TemplateError.
+
+    """
+    def setUp(self):
+        super(TemplateTest, self).setUp()
+
+        credentials = {
+            'username': 'admin',
+            'password': 'admin',
+        }
+        User.objects.create_superuser(email='admin@example.com', **credentials)
+        self.client.login(**credentials)
+
+    @skipUnless(StrictVersion(django.get_version()) <= StrictVersion('1.9'),
+                'Check RemovedInDjango19Warning is not raised')
+    def test_get_mail_factory_list_django19_and_less(self):
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            response = self.client.get(reverse('mail_factory_list'))
+            # We should no longer have a RemovedInDjango19Warning raised.
+            self.assertEqual(len(w), 0)
+
+        self.assertEqual(response.status_code, 200)
+
+    @skipUnless(StrictVersion(django.get_version()) > StrictVersion('1.9'),
+                'Do not check if RemovedInDjango19Warning is not raised')
+    def test_get_mail_factory_list_django110(self):
+        response = self.client.get(reverse('mail_factory_list'))
+        self.assertEqual(response.status_code, 200)
 
 
 class MailPreviewMixinTest(TestCase):
