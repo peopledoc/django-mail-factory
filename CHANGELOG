@@ -1,10 +1,10 @@
 Changelog
 =========
 
-0.20 (unreleased)
+0.20 (2017-10-12)
 -----------------
 
-- Nothing changed yet.
+- Do not load url templatetag in templates
 
 
 0.19 (2017-09-21)
