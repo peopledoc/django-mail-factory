@@ -2,9 +2,9 @@
 Django Mail Factory
 ###################
 
-.. image:: https://secure.travis-ci.org/novafloss/django-mail-factory.png?branch=master
+.. image:: https://secure.travis-ci.org/peopledoc/django-mail-factory.png?branch=master
    :alt: Build Status
-   :target: https://travis-ci.org/novafloss/django-mail-factory
+   :target: https://travis-ci.org/peopledoc/django-mail-factory
 .. image:: https://pypip.in/v/django-mail-factory/badge.png
    :target: https://crate.io/packages/django-mail-factory/
 .. image:: https://pypip.in/d/django-mail-factory/badge.png
@@ -13,10 +13,10 @@ Django Mail Factory
 Django Mail Factory lets you manage your email in a multilingual project.
 
 * Authors: Rémy Hubscher and `contributors
-  <https://github.com/novafloss/django-mail-factory/graphs/contributors>`_
+  <https://github.com/peopledoc/django-mail-factory/graphs/contributors>`_
 * Licence: BSD
 * Compatibility: Django 1.8, 1.9, 1.10, 1.11, python2.7, python3.4 and python3.5
-* Project URL: https://github.com/novafloss/django-mail-factory
+* Project URL: https://github.com/peopledoc/django-mail-factory
 * Documentation: http://django-mail-factory.rtfd.org/
 
 
@@ -27,7 +27,7 @@ Setup your environment:
 
 ::
 
-    git clone https://github.com/novafloss/django-mail-factory.git
+    git clone https://github.com/peopledoc/django-mail-factory.git
     cd django-mail-factory
 
 Hack and run the tests using `Tox <https://pypi.python.org/pypi/tox>`_ to test
