@@ -5,6 +5,7 @@ Changelog
 -----------------
 
 - Migrate GitHub organization
+- Drop Python 3.4 support
 
 
 0.20 (2017-10-12)
