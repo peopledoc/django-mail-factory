@@ -11,7 +11,6 @@ import warnings
 
 import django
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -19,6 +18,14 @@ from django.test.client import RequestFactory
 from .. import factory
 from .. import views
 from ..forms import MailForm
+
+
+try:
+    from django.urls import reverse
+except ImportError:
+    # django.core.urlresolvers has been deprecated in favor of
+    # django.urls in Django 1.10 and removed in Django 2.0
+    from django.core.urlresolvers import reverse
 
 
 class MailListViewTest(TestCase):
