@@ -106,6 +106,8 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+MIDDLEWARE = MIDDLEWARE_CLASSES
+
 ROOT_URLCONF = 'demo.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
