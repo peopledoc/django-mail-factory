@@ -46,7 +46,10 @@ class EmailMultiRelated(EmailMultiAlternatives):
         """Attaches a file from the filesystem."""
         if not filename:
             filename = basename(path)
-        content = open(path, 'rb').read()
+
+        with open(path, 'rb') as fd:
+            content = fd.read()
+
         self.attach_related(filename, content, mimetype)
 
     def _create_message(self, msg):
