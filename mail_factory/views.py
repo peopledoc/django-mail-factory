@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.template import TemplateDoesNotExist
+from django.utils.html import escape
 from django.views.generic import TemplateView, FormView
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
@@ -88,11 +89,10 @@ class MailFormView(MailPreviewMixin, FormView):
 
     def form_valid(self, form):
         if self.raw:
-            return HttpResponse('<pre>%s</pre>' %
-                                factory.get_raw_content(
-                                    self.mail_name,
-                                    [settings.DEFAULT_FROM_EMAIL],
-                                    form.cleaned_data).message())
+            raw_message = factory.get_raw_content(self.mail_name,
+                                                  [settings.DEFAULT_FROM_EMAIL],
+                                                  form.cleaned_data).message()
+            return HttpResponse('<pre>%s</pre>' % escape(raw_message))
 
         if self.send:
             factory.mail(self.mail_name, [self.email], form.cleaned_data)
