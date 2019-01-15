@@ -1,3 +1,5 @@
+dist: xenial
+sudo: true
 language: python
 matrix:
     include:
@@ -15,7 +17,14 @@ matrix:
         - python: 3.6
           env: TOX_ENV=py36-django20
         - python: 3.6
+          env: TOX_ENV=py36-django21
+        - python: 3.6
           env: TOX_ENV=py36-djangostable
+
+        - python: 3.7
+          env: TOX_ENV=py37-django20
+        - python: 3.7
+          env: TOX_ENV=py37-django21
 
         - env: TOX_ENV=flake8
 
