@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 """URLconf for mail_factory admin interface."""
+from django.conf import settings
 from django.conf.urls import url
 
-from django.conf import settings
-
-from mail_factory.views import mail_list, form, preview_message, html_not_found
-
+from mail_factory.views import form, html_not_found, mail_list, preview_message
 
 LANGUAGE_CODES = '|'.join([code for code, name in settings.LANGUAGES])
 

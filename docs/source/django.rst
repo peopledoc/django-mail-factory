@@ -17,14 +17,14 @@ Here is an example of how you can use Mail Factory with the
 You can first add this pattern in your ``urls.py``:
 
 .. code-block:: python
+    from mail_factory.contrib.auth.views import password_reset
 
-    url(_(r'^password_reset/$'),
-        'mail_factory.contrib.auth.views.password_reset'),
-    url(_(r'^password_reset/(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-'
-          r'[0-9A-Za-z]{1,20})/$'),
-        'django.contrib.auth.views.password_reset_confirm'),
-    url(_(r'^password_reset/done/$'),
-        'django.contrib.auth.views.password_reset_done')
+
+    urlpatterns = [
+        url(_(r'^password_reset/$'), password_reset, name="password_reset"),
+
+        ...
+    ]
 
 
 Then you can overload the default templates
@@ -41,6 +41,7 @@ But you can also register your own ``PasswordResetMail``:
 
     class PasswordResetMail(AppBaseMail, PasswordResetMail):
         """Add the App header + i18n for PasswordResetMail."""
+        template_name = 'password_reset'
 
 
     class PasswordResetForm(AppBaseMailForm):
@@ -60,10 +61,11 @@ But you can also register your own ``PasswordResetMail``:
 You can then update your urls.py to use this new form:
 
 .. code-block:: python
+    from mail_factory.contrib.auth.views import PasswordResetView
 
     url(_(r'^password_reset/$'),
-        'mail_factory.contrib.auth.views.password_reset',
-        {'email_template_name': 'password_reset'}),
+        PasswordResetView.as_view(email_template_name="password_reset"),
+        name="password_reset"),
 
 
 The default PasswordResetMail is not registered in the factory so that
