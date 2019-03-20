@@ -98,9 +98,9 @@ your mail.
     import datetime
     import uuid
 
-    from django.conf import settings
-    from django.core.urlresolvers import reverse_lazy as reverse
     from django import forms
+    from django.conf import settings
+    from django.urls import reverse_lazy as reverse
     from mail_factory import factory, MailForm, BaseMail
 
 

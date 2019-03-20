@@ -22,7 +22,7 @@ You can first add this pattern in your ``urls.py``:
         'mail_factory.contrib.auth.views.password_reset'),
     url(_(r'^password_reset/(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-'
           r'[0-9A-Za-z]{1,20})/$'),
-        'django.contrib.auth.views.password_reset_confirm')
+        'django.contrib.auth.views.password_reset_confirm'),
     url(_(r'^password_reset/done/$'),
         'django.contrib.auth.views.password_reset_done')
 
