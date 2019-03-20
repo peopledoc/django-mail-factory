@@ -3,7 +3,7 @@
 from django.contrib.auth.views import \
     PasswordResetView as DjangoPasswordResetView
 from django.http import HttpResponseRedirect
-from django.utils.encoding import force_text
+
 from .forms import PasswordResetForm
 
 

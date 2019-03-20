@@ -15,11 +15,10 @@ from .mails import PasswordResetMail
 class PasswordResetForm(DjangoPasswordResetForm):
     """MailFactory PasswordReset alternative."""
 
-    def mail_factory_email(self, domain_override=None,
-             email_template_name=None,
-             use_https=False, token_generator=default_token_generator,
-             from_email=None, request=None,
-             extra_email_context=None):
+    def mail_factory_email(
+            self, domain_override=None, email_template_name=None,
+            use_https=False, token_generator=default_token_generator,
+            from_email=None, request=None, extra_email_context=None):
         """
         Generates a one-use only link for resetting password and sends to the
         user.

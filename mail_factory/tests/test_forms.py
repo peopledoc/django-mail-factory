@@ -5,7 +5,6 @@ are automatically registered, and serve as fixture."""
 
 from __future__ import unicode_literals
 
-
 from django import forms
 from django.test import TestCase
 

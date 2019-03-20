@@ -200,4 +200,4 @@ class MailTest(TestCase):
 
         self.assertIn('Reply-To', msg.extra_headers)
         self.assertEqual(msg.extra_headers['Reply-To'],
-                          settings.NO_REPLY_EMAIL)
+                         settings.NO_REPLY_EMAIL)

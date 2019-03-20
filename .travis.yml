@@ -34,7 +34,7 @@ matrix:
         - python: 3.7
           env: TOX_ENV=py37-djangostable
 
-        - env: TOX_ENV=flake8
+        - env: TOX_ENV=lint
 
 script:
     - tox -e $TOX_ENV
