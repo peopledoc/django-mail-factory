@@ -8,6 +8,7 @@ Welcome to django-mail-factory's documentation!
 
 Django Mail Factory is a little Django app that let's you manage emails
 for your project very easily.
+It's compatible with Django >= 1.11.
 
 Features
 --------
@@ -137,8 +138,6 @@ them by sending them to a custom address with a custom context.
           in installed applications. To prevent it, change your INSTALLED_APPS
           to contain 'mail_factory.SimpleMailFactoryConfig' instead of
           'mail_factory'.
-
-          This is only available in Django 1.7 and above.
 
 
 Contents

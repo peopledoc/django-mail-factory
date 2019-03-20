@@ -89,12 +89,8 @@ class BaseMail(object):
 
         """
         tpl = select_template(self.get_template_part(part, lang=lang))
-        cur_lang = translation.get_language()
-        try:
-            translation.activate(lang or self.lang)
+        with translation.override(lang or self.lang):
             rendered = tpl.render(self.context)
-        finally:
-            translation.activate(cur_lang)
         return rendered.strip()
 
     def create_email_msg(self, emails, attachments=None, from_email=None,
@@ -103,7 +99,7 @@ class BaseMail(object):
         """Create an email message instance."""
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
-        subject = self._render_part('subject.txt', lang=lang).strip()
+        subject = self._render_part('subject.txt', lang=lang)
         try:
             body = self._render_part('body.txt', lang=lang)
         except TemplateDoesNotExist:

@@ -5,27 +5,14 @@ are automatically registered, and serve as fixture."""
 
 from __future__ import unicode_literals
 
-from distutils.version import StrictVersion
-from unittest import skipUnless
-import warnings
-
-import django
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponse
 from django.test import TestCase
 from django.test.client import RequestFactory
+from django.urls import reverse
 
-from .. import factory
-from .. import views
+from .. import factory, views
 from ..forms import MailForm
-
-
-try:
-    from django.urls import reverse
-except ImportError:
-    # django.core.urlresolvers has been deprecated in favor of
-    # django.urls in Django 1.10 and removed in Django 2.0
-    from django.core.urlresolvers import reverse
 
 
 class MailListViewTest(TestCase):
@@ -52,20 +39,6 @@ class TemplateTest(TestCase):
         User.objects.create_superuser(email='admin@example.com', **credentials)
         self.client.login(**credentials)
 
-    @skipUnless(StrictVersion(django.get_version()) <= StrictVersion('1.9'),
-                'Check RemovedInDjango19Warning is not raised')
-    def test_get_mail_factory_list_django19_and_less(self):
-        with warnings.catch_warnings(record=True) as w:
-            # Cause all warnings to always be triggered.
-            warnings.simplefilter("always")
-            response = self.client.get(reverse('mail_factory_list'))
-            # We should no longer have a RemovedInDjango19Warning raised.
-            self.assertEqual(len(w), 0)
-
-        self.assertEqual(response.status_code, 200)
-
-    @skipUnless(StrictVersion(django.get_version()) > StrictVersion('1.9'),
-                'Do not check if RemovedInDjango19Warning is not raised')
     def test_get_mail_factory_list_django110(self):
         response = self.client.get(reverse('mail_factory_list'))
         self.assertEqual(response.status_code, 200)
