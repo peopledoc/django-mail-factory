@@ -4,7 +4,10 @@ Changelog
 0.22 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fix mail_factory.contrib app for django >= 2.1
+- Isort the code
+- Display python warnings while running tox targets
+- Remove some Django < 1.11 compatibility code
 
 
 0.21 (2018-09-20)
