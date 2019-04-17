@@ -4,7 +4,7 @@ Changelog
 0.22 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Run tests for Django 2.2 and Python 3.5, 3.6 and 3.7
 
 
 0.21 (2018-09-20)
