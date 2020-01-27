@@ -19,19 +19,19 @@ class MailForm(forms.Form):
         super(MailForm, self).__init__(*args, **kwargs)
 
         if self.mail_class is not None:
+            ordering = []
+
             # Automatic param creation for not already defined fields
             for param in self.mail_class.params:
                 if param not in self.fields:
                     self.fields[param] = self.get_field_for_param(param)
+                    ordering.append(param)
 
-            keyOrder = self.mail_class.params
-            if hasattr(self.fields, 'keyOrder'):  # Django < 1.7
-                keyOrder += [x for x in self.fields.keyOrder
-                             if x not in self.mail_class.params]
-            else:  # Django >= 1.7
-                keyOrder += [x for x in self.fields.keys()
-                             if x not in self.mail_class.params]
-            self.fields.keyOrder = keyOrder
+            # Append defined fields at the end of the form
+            ordering += [x for x in self.fields.keys()
+                         if x not in self.mail_class.params]
+
+            self.order_fields(ordering)
 
     def get_field_for_param(self, param):
         """By default always return a CharField for a param."""
