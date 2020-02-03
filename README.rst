@@ -52,7 +52,20 @@ http://localhost:8000/mail_factory/.
 Release
 =======
 
+To prepare a new version:
+
+* Create a branch named ``release/<version>``
+* In a commit, change the ``CHANGELOG`` and ``VERSION`` file to remove the ``.dev0`` and set the date of the release
+* In a second commit, change the ``VERSION`` to the next version number + ``.dev0``
+* Create a PR for your branch
+* When the PR is merged, tag the first commit with the version number, and create a github release using the ``CHANGELOG``
+
 To release a new version (including the wheel)::
 
-    pip install wheel
-    python setup.py sdist bdist_wheel upload
+    pip install twine
+    python setup.py sdist bdist_wheel
+    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+And after testing everything works fine on the testing repository::
+
+    twine upload dist/*
