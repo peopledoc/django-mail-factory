@@ -62,5 +62,10 @@ To prepare a new version:
 
 To release a new version (including the wheel)::
 
-    pip install wheel
-    python setup.py sdist bdist_wheel upload
+    pip install twine
+    python setup.py sdist bdist_wheel
+    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+And after testing everything works fine on the testing repository::
+
+    twine upload dist/*
