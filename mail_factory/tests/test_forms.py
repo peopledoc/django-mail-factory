@@ -5,7 +5,6 @@ are automatically registered, and serve as fixture."""
 
 from __future__ import unicode_literals
 
-
 from django import forms
 from django.test import TestCase
 
@@ -59,13 +58,13 @@ class FormTest(TestCase):
         self.assertEqual(mailform.mail_class, CommentMail)
         self.assertIn('title', mailform.fields)
         self.assertIn('content', mailform.fields)
-        self.assertEqual(mailform.fields.keyOrder, ['content', 'title'])
+        self.assertEqual(list(mailform.fields.keys()), ['content', 'title'])
         # with mail_class as class attribute
         mailform = CommentFormWithMailClass()
         self.assertEqual(mailform.mail_class, CommentMail)
         self.assertIn('title', mailform.fields)
         self.assertIn('content', mailform.fields)
-        self.assertEqual(mailform.fields.keyOrder, ['content', 'title'])
+        self.assertEqual(list(mailform.fields.keys()), ['content', 'title'])
 
     def test_get_field_for_params(self):
         field = MailForm().get_field_for_param('foo')

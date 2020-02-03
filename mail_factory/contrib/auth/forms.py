@@ -1,54 +1,51 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
-from django.contrib.auth.forms import PasswordResetForm
-from django.contrib.sites.models import get_current_site
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import int_to_base36
 
-from .mails import PasswordResetMail
+from django.contrib.auth.forms import \
+    PasswordResetForm as DjangoPasswordResetForm
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode
+
 from mail_factory import factory
 
+from .mails import PasswordResetMail
 
-class PasswordResetForm(PasswordResetForm):
+
+class PasswordResetForm(DjangoPasswordResetForm):
     """MailFactory PasswordReset alternative."""
 
-    def save(self, domain_override=None,
-             subject_template_name=None,  # Not used anymore
-             email_template_name=None,  # Mail Factory template name
-             mail_object=None,  # Mail Factory Mail object
-             use_https=False, token_generator=default_token_generator,
-             from_email=None, request=None):
+    def mail_factory_email(
+            self, domain_override=None, email_template_name=None,
+            use_https=False, token_generator=default_token_generator,
+            from_email=None, request=None, extra_email_context=None):
         """
         Generates a one-use only link for resetting password and sends to the
         user.
         """
-        for user in self.users_cache:
+        email = self.cleaned_data["email"]
+        for user in self.get_users(email):
             if not domain_override:
                 current_site = get_current_site(request)
                 site_name = current_site.name
                 domain = current_site.domain
             else:
                 site_name = domain = domain_override
-
-            context_params = {
-                'email': user.email,
+            context = {
+                'email': email,
                 'domain': domain,
                 'site_name': site_name,
-                'uid': int_to_base36(user.pk),
+                'uid': force_text(urlsafe_base64_encode(force_bytes(user.pk))),
                 'user': user,
                 'token': token_generator.make_token(user),
-                'protocol': use_https and 'https' or 'http',
+                'protocol': 'https' if use_https else 'http',
             }
-
-            from_email = from_email or settings.DEFAULT_FROM_EMAIL
+            if extra_email_context is not None:
+                context.update(extra_email_context)
 
             if email_template_name is not None:
-                mail = factory.get_mail_object(email_template_name,
-                                               context_params)
+                mail = factory.get_mail_object(email_template_name, context)
             else:
-                if mail_object is None:
-                    mail_object = PasswordResetMail
-                mail = mail_object(context_params)
+                mail = PasswordResetMail(context)
 
-            mail.send(emails=[user.email],
-                      from_email=from_email)
+            mail.send(emails=[user.email], from_email=from_email)
