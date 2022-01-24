@@ -68,11 +68,11 @@ class BaseMail(object):
         """
         templates = []
         # 1/ localized: mails/invitation_code/fr/
-        localized = join('mails', self.template_name, lang or self.lang, part)
+        localized = join("mails", self.template_name, lang or self.lang, part)
         templates.append(localized)
 
         # 2/ fallback: mails/invitation_code/
-        fallback = join('mails', self.template_name, part)
+        fallback = join("mails", self.template_name, part)
         templates.append(fallback)
 
         # return the list of templates path candidates
@@ -93,26 +93,31 @@ class BaseMail(object):
             rendered = tpl.render(self.context)
         return rendered.strip()
 
-    def create_email_msg(self, emails, attachments=None, from_email=None,
-                         lang=None, message_class=EmailMultiRelated,
-                         headers=None):
+    def create_email_msg(
+        self,
+        emails,
+        attachments=None,
+        from_email=None,
+        lang=None,
+        message_class=EmailMultiRelated,
+        headers=None,
+    ):
         """Create an email message instance."""
 
         from_email = from_email or settings.DEFAULT_FROM_EMAIL
-        subject = self._render_part('subject.txt', lang=lang)
+        subject = self._render_part("subject.txt", lang=lang)
         try:
-            body = self._render_part('body.txt', lang=lang)
+            body = self._render_part("body.txt", lang=lang)
         except TemplateDoesNotExist:
             body = None
         try:
-            html_content = self._render_part('body.html', lang=lang)
+            html_content = self._render_part("body.html", lang=lang)
         except TemplateDoesNotExist:
             html_content = None
 
         # If we have neither a html or txt template
         if html_content is None and body is None:
-            raise TemplateDoesNotExist(
-                "Txt and html templates have not been found")
+            raise TemplateDoesNotExist("Txt and html templates have not been found")
 
         # If we have the html template only, we build automatically
         # txt content.
@@ -123,21 +128,22 @@ class BaseMail(object):
         if headers is None:
             reply_to = getattr(settings, "NO_REPLY_EMAIL", None)
             if not reply_to:
-                reply_to = getattr(settings, "SUPPORT_EMAIL",
-                                   settings.DEFAULT_FROM_EMAIL)
+                reply_to = getattr(
+                    settings, "SUPPORT_EMAIL", settings.DEFAULT_FROM_EMAIL
+                )
 
-            headers = {'Reply-To': reply_to}
+            headers = {"Reply-To": reply_to}
 
         msg = message_class(subject, body, from_email, emails, headers=headers)
         if html_content:
-            msg.attach_alternative(html_content, 'text/html')
+            msg.attach_alternative(html_content, "text/html")
 
         attachments = self.get_attachments(attachments)
 
         if attachments:
             for filepath, filename, mimetype in attachments:
-                with open(filepath, 'rb') as attachment:
-                    if mimetype.startswith('image'):
+                with open(filepath, "rb") as attachment:
+                    if mimetype.startswith("image"):
                         msg.attach_related_file(filepath, mimetype, filename)
                     else:
                         msg.attach(filename, attachment.read(), mimetype)
@@ -145,8 +151,9 @@ class BaseMail(object):
 
     def send(self, emails, attachments=None, from_email=None, headers=None):
         """Create the message and send it to emails."""
-        message = self.create_email_msg(emails, attachments=attachments,
-                                        from_email=from_email, headers=headers)
+        message = self.create_email_msg(
+            emails, attachments=attachments, from_email=from_email, headers=headers
+        )
         message.send()
 
     def mail_admins(self, attachments=None, from_email=None):

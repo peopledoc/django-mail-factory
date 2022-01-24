@@ -13,15 +13,33 @@ class EmailMultiRelated(EmailMultiAlternatives):
     A version of EmailMessage that makes it easy to send multipart/related
     messages. For example, including text and HTML versions with inline images.
     """
-    related_subtype = 'related'
 
-    def __init__(self, subject='', body='', from_email=None, to=None, bcc=None,
-                 connection=None, attachments=None, headers=None,
-                 alternatives=None):
+    related_subtype = "related"
+
+    def __init__(
+        self,
+        subject="",
+        body="",
+        from_email=None,
+        to=None,
+        bcc=None,
+        connection=None,
+        attachments=None,
+        headers=None,
+        alternatives=None,
+    ):
         self.related_attachments = []
         super(EmailMultiRelated, self).__init__(
-            subject, body, from_email, to, bcc, connection,
-            attachments, headers, alternatives)
+            subject,
+            body,
+            from_email,
+            to,
+            bcc,
+            connection,
+            attachments,
+            headers,
+            alternatives,
+        )
 
     def attach_related(self, filename=None, content=None, mimetype=None):
         """
@@ -43,21 +61,25 @@ class EmailMultiRelated(EmailMultiAlternatives):
         if not filename:
             filename = basename(path)
 
-        with open(path, 'rb') as fd:
+        with open(path, "rb") as fd:
             content = fd.read()
 
         self.attach_related(filename, content, mimetype)
 
     def _create_message(self, msg):
         return self._create_attachments(
-            self._create_related_attachments(self._create_alternatives(msg)))
+            self._create_related_attachments(self._create_alternatives(msg))
+        )
 
     def _create_alternatives(self, msg):
         for i, (content, mimetype) in enumerate(self.alternatives):
-            if mimetype == 'text/html':
+            if mimetype == "text/html":
                 for filename, _, _ in self.related_attachments:
-                    content = re.sub(r'(?<!cid:)%s' % re.escape(filename),
-                                     'cid:%s' % filename, content)
+                    content = re.sub(
+                        r"(?<!cid:)%s" % re.escape(filename),
+                        "cid:%s" % filename,
+                        content,
+                    )
                 self.alternatives[i] = (content, mimetype)
 
         return super(EmailMultiRelated, self)._create_alternatives(msg)
@@ -66,8 +88,7 @@ class EmailMultiRelated(EmailMultiAlternatives):
         encoding = self.encoding or settings.DEFAULT_CHARSET
         if self.related_attachments:
             body_msg = msg
-            msg = SafeMIMEMultipart(_subtype=self.related_subtype,
-                                    encoding=encoding)
+            msg = SafeMIMEMultipart(_subtype=self.related_subtype, encoding=encoding)
             if self.body:
                 msg.attach(body_msg)
             for related in self.related_attachments:
@@ -81,13 +102,13 @@ class EmailMultiRelated(EmailMultiAlternatives):
         Taken from http://code.djangoproject.com/ticket/4771
         """
         attachment = super(EmailMultiRelated, self)._create_attachment(
-            filename, content, mimetype)
+            filename, content, mimetype
+        )
         if filename:
-            mimetype = attachment['Content-Type']
-            del(attachment['Content-Type'])
-            del(attachment['Content-Disposition'])
-            attachment.add_header('Content-Disposition', 'inline',
-                                  filename=filename)
-            attachment.add_header('Content-Type', mimetype, name=filename)
-            attachment.add_header('Content-ID', '<%s>' % filename)
+            mimetype = attachment["Content-Type"]
+            del attachment["Content-Type"]
+            del attachment["Content-Disposition"]
+            attachment.add_header("Content-Disposition", "inline", filename=filename)
+            attachment.add_header("Content-Type", mimetype, name=filename)
+            attachment.add_header("Content-ID", "<%s>" % filename)
         return attachment
