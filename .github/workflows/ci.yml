@@ -80,7 +80,7 @@ jobs:
       - name: Run ${{ matrix.name }}
         run: tox
         env:
-          TOX_ENV: "${{ matrix.tox_env }}"
+          TOXENV: "${{ matrix.tox_env }}"
 
   report-status:
     name: success
