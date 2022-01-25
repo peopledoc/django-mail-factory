@@ -5,37 +5,36 @@ are automatically registered, and serve as fixture."""
 
 from __future__ import unicode_literals
 
-from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetDoneView
 from django.core import mail
 from django.test import TestCase, override_settings
-from django.urls import reverse
+from django.urls import re_path, reverse
 
 from mail_factory import factory
 from mail_factory.contrib.auth.mails import PasswordResetMail
 from mail_factory.contrib.auth.views import PasswordResetView, password_reset
 
 urlpatterns = [
-    url(r"^reset/$", password_reset, name="reset"),
-    url(
+    re_path(r"^reset/$", password_reset, name="reset"),
+    re_path(
         r"^reset_template_name/$",
         PasswordResetView.as_view(email_template_name="password_reset"),
         name="reset_template_name",
     ),
-    url(
+    re_path(
         r"^password_reset/(?P<uidb64>[0-9A-Za-z_\-]+)/"
-        r"(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$",
+        r"(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,64})/$",
         PasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
-    url(
+    re_path(
         r"^password_reset/done/$",
         PasswordResetDoneView.as_view(),
         name="password_reset_done",
     ),
-    url(r"^admin/", admin.site.urls),
+    re_path(r"^admin/", admin.site.urls),
 ]
 
 

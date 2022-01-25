@@ -19,7 +19,7 @@ class MailListViewTest(TestCase):
     def test_get_context_data(self):
         data = views.MailListView().get_context_data()
         self.assertIn("mail_map", data)
-        self.assertEqual(len(data), len(factory._registry))
+        self.assertEqual(len(data["mail_map"]), len(factory._registry))
 
 
 class TemplateTest(TestCase):

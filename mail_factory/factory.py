@@ -26,7 +26,6 @@ class MailFactory(object):
                     self._registry[mail_klass.template_name].__name__,
                 )
             )
-
         self._registry[mail_klass.template_name] = mail_klass
 
         mail_form = mail_form or self.mail_form

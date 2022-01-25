@@ -9,8 +9,6 @@ DEBUG = True
 
 ADMINS = (("Some Admin", "some_admin@example.com"),)
 
-sys.path.insert(0, os.path.dirname(__file__))
-
 MANAGERS = ADMINS
 
 DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "db.sqlite"}}
@@ -122,7 +120,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     "mail_factory",
-    "demo_app",
+    "demo.demo_app",
 )
 
 # A sample logging configuration. The only tangible logging

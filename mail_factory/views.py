@@ -21,7 +21,6 @@ class MailListView(TemplateView):
         """Return object_list."""
         data = super(MailListView, self).get_context_data(**kwargs)
         mail_list = []
-
         for mail_name, mail_class in sorted(
             factory._registry.items(), key=lambda x: x[0]
         ):
