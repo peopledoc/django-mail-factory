@@ -91,7 +91,7 @@ class MailFactory(object):
             for filepath, filename, mimetype in attachments:
                 with open(filepath, "rb") as attachment:
                     if mimetype.startswith("image"):
-                        data_url_encode = "data:%s;base64,%s" % (
+                        data_url_encode = "data:{};base64,{}".format(
                             mimetype,
                             base64.b64encode(attachment.read()),
                         )

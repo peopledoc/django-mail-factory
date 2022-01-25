@@ -32,7 +32,7 @@ class MailListView(TemplateView):
 class MailPreviewMixin(object):
     def get_html_alternative(self, message):
         """Return the html alternative, if present."""
-        alternatives = dict((v, k) for k, v in message.alternatives)
+        alternatives = {v: k for k, v in message.alternatives}
         if "text/html" in alternatives:
             return alternatives["text/html"]
 
@@ -99,7 +99,7 @@ class MailFormView(MailPreviewMixin, FormView):
         if self.send:
             factory.mail(self.mail_name, [self.email], form.cleaned_data)
             messages.success(
-                self.request, "%s mail sent to %s" % (self.mail_name, self.email)
+                self.request, "{} mail sent to {}".format(self.mail_name, self.email)
             )
             return redirect("mail_factory_list")
 
