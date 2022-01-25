@@ -2,9 +2,6 @@
 # Django settings for demo project.
 from __future__ import unicode_literals
 
-import os
-import sys
-
 DEBUG = True
 
 ADMINS = (("Some Admin", "some_admin@example.com"),)
