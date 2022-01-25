@@ -14,27 +14,27 @@ admin_required = user_passes_test(lambda x: x.is_superuser)
 
 class MailListView(TemplateView):
     """Return a list of mails."""
-    template_name = 'mail_factory/list.html'
+
+    template_name = "mail_factory/list.html"
 
     def get_context_data(self, **kwargs):
         """Return object_list."""
         data = super(MailListView, self).get_context_data(**kwargs)
         mail_list = []
-
-        for mail_name, mail_class in sorted(factory._registry.items(),
-                                            key=lambda x: x[0]):
+        for mail_name, mail_class in sorted(
+            factory._registry.items(), key=lambda x: x[0]
+        ):
             mail_list.append((mail_name, mail_class.__name__))
-        data['mail_map'] = mail_list
+        data["mail_map"] = mail_list
         return data
 
 
 class MailPreviewMixin(object):
-
     def get_html_alternative(self, message):
         """Return the html alternative, if present."""
-        alternatives = dict((v, k) for k, v in message.alternatives)
-        if 'text/html' in alternatives:
-            return alternatives['text/html']
+        alternatives = {v: k for k, v in message.alternatives}
+        if "text/html" in alternatives:
+            return alternatives["text/html"]
 
     def get_mail_preview(self, template_name, lang, cid_to_data=False):
         """Return a preview from a mail's form's initial data."""
@@ -53,8 +53,9 @@ class MailPreviewMixin(object):
         message = mail.create_email_msg([settings.ADMINS], lang=lang)
 
         try:
-            message.html = factory.get_html_for(self.mail_name, data,
-                                                lang=lang, cid_to_data=True)
+            message.html = factory.get_html_for(
+                self.mail_name, data, lang=lang, cid_to_data=True
+            )
         except TemplateDoesNotExist:
             message.html = False
 
@@ -62,7 +63,7 @@ class MailPreviewMixin(object):
 
 
 class MailFormView(MailPreviewMixin, FormView):
-    template_name = 'mail_factory/form.html'
+    template_name = "mail_factory/form.html"
 
     def dispatch(self, request, mail_name):
         self.mail_name = mail_name
@@ -72,15 +73,15 @@ class MailFormView(MailPreviewMixin, FormView):
         except exceptions.MailFactoryError:
             raise Http404
 
-        self.raw = 'raw' in request.POST
-        self.send = 'send' in request.POST
-        self.email = request.POST.get('email')
+        self.raw = "raw" in request.POST
+        self.send = "send" in request.POST
+        self.email = request.POST.get("email")
 
         return super(MailFormView, self).dispatch(request)
 
     def get_form_kwargs(self):
         kwargs = super(MailFormView, self).get_form_kwargs()
-        kwargs['mail_class'] = self.mail_class
+        kwargs["mail_class"] = self.mail_class
         return kwargs
 
     def get_form_class(self):
@@ -88,54 +89,54 @@ class MailFormView(MailPreviewMixin, FormView):
 
     def form_valid(self, form):
         if self.raw:
-            return HttpResponse('<pre>%s</pre>' %
-                                factory.get_raw_content(
-                                    self.mail_name,
-                                    [settings.DEFAULT_FROM_EMAIL],
-                                    form.cleaned_data).message())
+            return HttpResponse(
+                "<pre>%s</pre>"
+                % factory.get_raw_content(
+                    self.mail_name, [settings.DEFAULT_FROM_EMAIL], form.cleaned_data
+                ).message()
+            )
 
         if self.send:
             factory.mail(self.mail_name, [self.email], form.cleaned_data)
-            messages.success(self.request,
-                             '%s mail sent to %s' % (self.mail_name,
-                                                     self.email))
-            return redirect('mail_factory_list')
+            messages.success(
+                self.request, "{} mail sent to {}".format(self.mail_name, self.email)
+            )
+            return redirect("mail_factory_list")
 
         data = None
 
         if form:
             data = form.get_context_data()
-            if hasattr(form, 'cleaned_data'):
+            if hasattr(form, "cleaned_data"):
                 data.update(form.cleaned_data)
 
         try:
-            html = factory.get_html_for(self.mail_name, data,
-                                        cid_to_data=True)
+            html = factory.get_html_for(self.mail_name, data, cid_to_data=True)
         except TemplateDoesNotExist:
-            return redirect('mail_factory_html_not_found',
-                            mail_name=self.mail_name)
+            return redirect("mail_factory_html_not_found", mail_name=self.mail_name)
         return HttpResponse(html)
 
     def get_context_data(self, **kwargs):
         data = super(MailFormView, self).get_context_data(**kwargs)
-        data['mail_name'] = self.mail_name
+        data["mail_name"] = self.mail_name
 
         preview_messages = {}
         for lang_code, lang_name in settings.LANGUAGES:
             message = self.get_mail_preview(self.mail_name, lang_code)
             preview_messages[lang_code] = message
-        data['preview_messages'] = preview_messages
+        data["preview_messages"] = preview_messages
 
         return data
 
 
 class HTMLNotFoundView(TemplateView):
     """No HTML template was found"""
-    template_name = 'mail_factory/html_not_found.html'
+
+    template_name = "mail_factory/html_not_found.html"
 
 
 class MailPreviewMessageView(MailPreviewMixin, TemplateView):
-    template_name = 'mail_factory/preview_message.html'
+    template_name = "mail_factory/preview_message.html"
 
     def dispatch(self, request, mail_name, lang):
         self.mail_name = mail_name
@@ -151,8 +152,8 @@ class MailPreviewMessageView(MailPreviewMixin, TemplateView):
     def get_context_data(self, **kwargs):
         data = super(MailPreviewMessageView, self).get_context_data(**kwargs)
         message = self.get_mail_preview(self.mail_name, self.lang)
-        data['mail_name'] = self.mail_name
-        data['message'] = message
+        data["mail_name"] = self.mail_name
+        data["message"] = message
         return data
 
 

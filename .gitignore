@@ -38,3 +38,5 @@ share/
 db.sqlite
 
 pip-selfcheck.json
+.venv
+dist

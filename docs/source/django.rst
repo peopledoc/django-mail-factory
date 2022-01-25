@@ -17,6 +17,7 @@ Here is an example of how you can use Mail Factory with the
 You can first add this pattern in your ``urls.py``:
 
 .. code-block:: python
+
     from mail_factory.contrib.auth.views import password_reset
 
 
@@ -61,6 +62,7 @@ But you can also register your own ``PasswordResetMail``:
 You can then update your urls.py to use this new form:
 
 .. code-block:: python
+
     from mail_factory.contrib.auth.views import PasswordResetView
 
     url(_(r'^password_reset/$'),
