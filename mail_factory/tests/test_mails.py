@@ -79,6 +79,28 @@ class MailTest(TestCase):
             ["mails/test/bar/stuff", "mails/test/stuff"],
         )
 
+    def test_get_text_content(self):
+        class TestMail(BaseMail):
+            params = []
+
+        test_mail = TestMail()
+        text_content = test_mail.get_text_content(
+            '<h1>Text</h1><em>Foo bar stuff here</em>')
+
+        self.assertEqual(text_content, '# Text\n\n_Foo bar stuff here_\n\n')
+
+    def test_get_text_content_with_html2text_setting(self):
+        class TestMail(BaseMail):
+            params = []
+
+        settings.MAIL_FACTORY_HTML2TEXT = {'emphasis_mark': '//'}
+
+        test_mail = TestMail()
+        text_content = test_mail.get_text_content(
+            '<em>Foo bar stuff here</em>')
+
+        self.assertEqual(text_content, '//Foo bar stuff here//\n\n')
+
     def test_render_part(self):
         class TestMail(BaseMail):
             params = []
