@@ -38,8 +38,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"django-mail-factory"
-copyright = u"2013, Rémy HUBSCHER"
+project = "django-mail-factory"
+copyright = "2013, Rémy HUBSCHER"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -184,8 +184,8 @@ latex_documents = [
     (
         "index",
         "django-mail-factory.tex",
-        u"django-mail-factory Documentation",
-        u"Rémy HUBSCHER",
+        "django-mail-factory Documentation",
+        "Rémy HUBSCHER",
         "manual",
     ),
 ]
@@ -219,8 +219,8 @@ man_pages = [
     (
         "index",
         "django-mail-factory",
-        u"django-mail-factory Documentation",
-        [u"Rémy HUBSCHER"],
+        "django-mail-factory Documentation",
+        ["Rémy HUBSCHER"],
         1,
     )
 ]
@@ -238,8 +238,8 @@ texinfo_documents = [
     (
         "index",
         "django-mail-factory",
-        u"django-mail-factory Documentation",
-        u"Rémy HUBSCHER",
+        "django-mail-factory Documentation",
+        "Rémy HUBSCHER",
         "django-mail-factory",
         "One line description of project.",
         "Miscellaneous",
