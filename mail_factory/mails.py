@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from os.path import join
 
 import html2text
@@ -12,7 +11,7 @@ from . import exceptions
 from .messages import EmailMultiRelated
 
 
-class BaseMail(object):
+class BaseMail:
     """Abstract class that helps creating emails.
 
     You need to define:
