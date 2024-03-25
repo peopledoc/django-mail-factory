@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-
 """Keep in mind throughout those tests that the mails from demo.demo_app.mails
 are automatically registered, and serve as fixture."""
 
-from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.contrib.auth.models import User

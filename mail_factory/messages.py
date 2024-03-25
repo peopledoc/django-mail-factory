@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import re
 from email.mime.base import MIMEBase
 from os.path import basename
@@ -29,7 +28,7 @@ class EmailMultiRelated(EmailMultiAlternatives):
         alternatives=None,
     ):
         self.related_attachments = []
-        super(EmailMultiRelated, self).__init__(
+        super().__init__(
             subject,
             body,
             from_email,
@@ -82,7 +81,7 @@ class EmailMultiRelated(EmailMultiAlternatives):
                     )
                 self.alternatives[i] = (content, mimetype)
 
-        return super(EmailMultiRelated, self)._create_alternatives(msg)
+        return super()._create_alternatives(msg)
 
     def _create_related_attachments(self, msg):
         encoding = self.encoding or settings.DEFAULT_CHARSET
@@ -101,7 +100,7 @@ class EmailMultiRelated(EmailMultiAlternatives):
         object. Adjust headers to use Content-ID where applicable.
         Taken from http://code.djangoproject.com/ticket/4771
         """
-        attachment = super(EmailMultiRelated, self)._create_attachment(
+        attachment = super()._create_attachment(
             filename, content, mimetype
         )
         if filename:

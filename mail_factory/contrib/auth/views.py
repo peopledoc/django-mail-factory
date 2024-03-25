@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.contrib.auth.views import PasswordResetView as DjangoPasswordResetView
 from django.http import HttpResponseRedirect
 

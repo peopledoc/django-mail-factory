@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 # Django settings for demo project.
-from __future__ import unicode_literals
 
 DEBUG = True
 
