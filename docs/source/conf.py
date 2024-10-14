@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # django-mail-factory documentation build configuration file, created by
 # sphinx-quickstart on Wed Jan 23 17:31:52 2013.
