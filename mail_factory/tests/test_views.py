@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-
 """Keep in mind throughout those tests that the mails from demo.demo_app.mails
 are automatically registered, and serve as fixture."""
 
-from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponse
@@ -30,7 +27,7 @@ class TemplateTest(TestCase):
     """
 
     def setUp(self):
-        super(TemplateTest, self).setUp()
+        super().setUp()
 
         credentials = {
             "username": "admin",
@@ -131,7 +128,7 @@ class MailFormViewTest(TestCase):
         self.assertEqual(view.get_form_class(), MailForm)
 
     def test_form_valid_raw(self):
-        class MockForm(object):
+        class MockForm:
             cleaned_data = {"title": "title", "content": "content"}
 
         view = views.MailFormView()
@@ -143,7 +140,7 @@ class MailFormViewTest(TestCase):
         self.assertTrue(response.content.startswith(b"<pre>"))
 
     def test_form_valid_send(self):
-        class MockForm(object):
+        class MockForm:
             cleaned_data = {"title": "title", "content": "content"}
 
         request = self.factory.get(
@@ -173,7 +170,7 @@ class MailFormViewTest(TestCase):
         self.assertEqual(response["location"], reverse("mail_factory_list"))
 
     def test_form_valid_html(self):
-        class MockForm(object):
+        class MockForm:
             cleaned_data = {"title": "title", "content": "content"}
 
             def get_context_data(self):

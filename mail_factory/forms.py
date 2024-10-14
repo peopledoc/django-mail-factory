@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django import forms
 
 
@@ -17,7 +16,7 @@ class MailForm(forms.Form):
         if "mail_class" in kwargs:
             self.mail_class = kwargs.pop("mail_class")
 
-        super(MailForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.mail_class is not None:
             ordering = []
