@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 DEBUG = True
-
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 ADMINS = (("Some Admin", "some_admin@example.com"),)
 
 MANAGERS = ADMINS
