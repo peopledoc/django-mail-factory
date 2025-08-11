@@ -11,7 +11,7 @@ class MailFactoryConfig(AppConfig):
     verbose_name = _("Mail Factory")
 
     def ready(self):
-        super(MailFactoryConfig, self).ready()
+        super().ready()
         for app in self.apps.get_app_configs():
             try:
                 import_module(name=".mails", package=app.module.__name__)

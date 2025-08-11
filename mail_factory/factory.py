@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 import base64
 
 from . import exceptions
 from .forms import MailForm
 
 
-class MailFactory(object):
+class MailFactory:
     mail_form = MailForm
     _registry = {}  # Needed: django.utils.module_loading.autodiscover_modules.
     form_map = {}
