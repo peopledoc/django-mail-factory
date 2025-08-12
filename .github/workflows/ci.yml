@@ -1,92 +1,67 @@
-name: CI
+name: Test
 
-on:
-  pull_request:
-  push:
-    branches:
-      - 'master'
-    tags:
-      - '*'
+on: [push, pull_request]
 
 jobs:
   build:
-
+    name: build (Python ${{ matrix.python-version }}, Django ${{ matrix.django-version }})
+    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        include:
-
-          - name: Python 3.9 / Django 2.2
-            python_version: "3.9"
-            tox_env: py39-django22
-
-          - name: Python 3.9 / Django 3.0
-            python_version: "3.9"
-            tox_env: py39-django30
-
-          - name: Python 3.9 / Django 3.1
-            python_version: "3.9"
-            tox_env: py39-django31
-
-          - name: Python 3.7 / Django 3.2
-            python_version: "3.7"
-            tox_env: py37-django32
-
-          - name: Python 3.8 / Django 3.2
-            python_version: "3.8"
-            tox_env: py38-django32
-
-          - name: Python 3.9 / Django 3.2
-            python_version: "3.9"
-            tox_env: py39-django32
-
-          - name: Python 3.10 / Django 3.2
-            python_version: "3.10"
-            tox_env: py310-django32
-
-          - name: Python 3.9 / Django 4.0
-            python_version: "3.9"
-            tox_env: py39-django40
-
-          - name: Docs
-            python_version: "3"
-            tox_env: docs
-
-          - name: Lint
-            python_version: "3"
-            tox_env: lint
-
-    name: "${{ matrix.name }}"
-    runs-on: ubuntu-latest
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        django-version: ['4.2', '5.0', 'main']
+        exclude:
+        # Django 5.0 dropped support for Python <3.10
+        - django-version: '5.0'
+          python-version: '3.8'
+        - django-version: '5.0'
+          python-version: '3.9'
+        - django-version: 'main'
+          python-version: '3.8'
+        - django-version: 'main'
+          python-version: '3.9'
 
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      - name: Set up Python
-        id: setup-python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python_version }}
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
 
-      - name: Pip cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cache/
-          key: ${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('setup.cfg') }}
+    - name: Get pip cache dir
+      id: pip-cache
+      run: |
+        echo "::set-output name=dir::$(pip cache dir)"
 
-      - name: Install Tox
-        run: pip install tox
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.pip-cache.outputs.dir }}
+        key:
+          ${{ matrix.python-version }}-v1-${{ hashFiles('**/setup.py') }}
+        restore-keys: |
+          ${{ matrix.python-version }}-v1-
 
-      - name: Run ${{ matrix.name }}
-        run: tox
-        env:
-          TOXENV: "${{ matrix.tox_env }}"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade tox tox-gh-actions
 
-  report-status:
-    name: success
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
+    - name: Set Path
+      run: |
+        PWD=$(pwd)
+        export PYTHONPATH=$PWD/:$PYTHONPATH
+        echo "PYTHONPATH=$PYTHONPATH" >> $GITHUB_ENV
+        
+    - name: Tox tests
+      run: |
+        tox -v
+      env:
+        DJANGO: ${{ matrix.django-version }}
 
-      - name: Report success
-        run: echo 'Success !'
+    - name: Upload coverage
+      uses: codecov/codecov-action@v1
+      with:
+        name: Python ${{ matrix.python-version }}
