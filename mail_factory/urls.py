@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """URLconf for mail_factory admin interface."""
 from django.conf import settings
 from django.urls import re_path

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
@@ -19,7 +18,7 @@ class MailListView(TemplateView):
 
     def get_context_data(self, **kwargs):
         """Return object_list."""
-        data = super(MailListView, self).get_context_data(**kwargs)
+        data = super().get_context_data(**kwargs)
         mail_list = []
         for mail_name, mail_class in sorted(
             factory._registry.items(), key=lambda x: x[0]
@@ -29,7 +28,7 @@ class MailListView(TemplateView):
         return data
 
 
-class MailPreviewMixin(object):
+class MailPreviewMixin:
     def get_html_alternative(self, message):
         """Return the html alternative, if present."""
         alternatives = {v: k for k, v in message.alternatives}
@@ -77,10 +76,10 @@ class MailFormView(MailPreviewMixin, FormView):
         self.send = "send" in request.POST
         self.email = request.POST.get("email")
 
-        return super(MailFormView, self).dispatch(request)
+        return super().dispatch(request)
 
     def get_form_kwargs(self):
-        kwargs = super(MailFormView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs["mail_class"] = self.mail_class
         return kwargs
 
@@ -117,7 +116,7 @@ class MailFormView(MailPreviewMixin, FormView):
         return HttpResponse(html)
 
     def get_context_data(self, **kwargs):
-        data = super(MailFormView, self).get_context_data(**kwargs)
+        data = super().get_context_data(**kwargs)
         data["mail_name"] = self.mail_name
 
         preview_messages = {}
@@ -147,10 +146,10 @@ class MailPreviewMessageView(MailPreviewMixin, TemplateView):
         except exceptions.MailFactoryError:
             raise Http404
 
-        return super(MailPreviewMessageView, self).dispatch(request)
+        return super().dispatch(request)
 
     def get_context_data(self, **kwargs):
-        data = super(MailPreviewMessageView, self).get_context_data(**kwargs)
+        data = super().get_context_data(**kwargs)
         message = self.get_mail_preview(self.mail_name, self.lang)
         data["mail_name"] = self.mail_name
         data["message"] = message

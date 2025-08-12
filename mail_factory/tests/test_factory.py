@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-
 """Keep in mind throughout those tests that the mails from demo.demo_app.mails
 are automatically registered, and serve as fixture."""
 
-from __future__ import unicode_literals
 
 from django.conf import settings
 from django.test import TestCase
@@ -127,7 +124,7 @@ class FactoryTest(TestCase):
 
 class FactoryMailTest(TestCase):
     def setUp(self):
-        class MockMail(object):  # mock mail to check if its methods are called
+        class MockMail:  # mock mail to check if its methods are called
             mail_admins_called = False
             send_called = False
             template_name = "mockmail"
