@@ -1,7 +1,6 @@
 """Keep in mind throughout those tests that the mails from demo.demo_app.mails
 are automatically registered, and serve as fixture."""
 
-
 from django.conf import settings
 from django.test import TestCase
 

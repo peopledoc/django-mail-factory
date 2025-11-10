@@ -1,7 +1,6 @@
 """Keep in mind throughout those tests that the mails from demo.demo_app.mails
 are automatically registered, and serve as fixture."""
 
-
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetDoneView

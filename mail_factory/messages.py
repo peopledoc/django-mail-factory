@@ -100,9 +100,7 @@ class EmailMultiRelated(EmailMultiAlternatives):
         object. Adjust headers to use Content-ID where applicable.
         Taken from http://code.djangoproject.com/ticket/4771
         """
-        attachment = super()._create_attachment(
-            filename, content, mimetype
-        )
+        attachment = super()._create_attachment(filename, content, mimetype)
         if filename:
             mimetype = attachment["Content-Type"]
             del attachment["Content-Type"]
